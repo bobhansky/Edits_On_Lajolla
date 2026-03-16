@@ -47,7 +47,7 @@ T next_pcg32_real(pcg32_state &rng) {
 
 // https://github.com/wjakob/pcg32/blob/master/pcg32.h
 template <>
-float next_pcg32_real(pcg32_state &rng) {
+inline float next_pcg32_real(pcg32_state &rng) {
     union {
         uint32_t u;
         float f;
@@ -58,7 +58,7 @@ float next_pcg32_real(pcg32_state &rng) {
 
 // https://github.com/wjakob/pcg32/blob/master/pcg32.h
 template <>
-double next_pcg32_real(pcg32_state &rng) {
+inline double next_pcg32_real(pcg32_state &rng) {
     union {
         uint64_t u;
         double d;

@@ -95,6 +95,36 @@ struct DisneyBSDF {
     Texture<Real> clearcoat_gloss;
 
     Real eta;
+
+};
+
+struct BSSRDF {
+public:
+    Texture<Spectrum> base_color;
+
+    Spectrum sigma_a_;          // absorb coefficient
+	Spectrum sigma_s_;          // scattering coefficient
+	Real g_;                    // anisotropy parameter 
+
+	Spectrum simgma_s_prime_;   // reduced scattering coefficient, sigma_s' = sigma_s * (1 - g)
+	Spectrum sigma_t_prime_;    // reduced extinction coefficient, sigma_t' = sigma_a + sigma_s'
+	Spectrum alpha_prime_;      // reduced albedo, alpha = sigma_s' / sigma_t'
+	Spectrum sigma_tr_;         // effective transport coefficient, sigma_tr = sqrt(3 * sigma_a * sigma_t')
+	Spectrum D_;                // diffusion coefficient, D = 1 / (3 * sigma_t')
+
+    Real Rmax_;
+
+    Real eta_; 
+
+    BSSRDF(Texture<Spectrum> base_color,
+           Spectrum sigma_a,
+           Spectrum sigma_s,
+           Real g,
+		   Real eta);
+
+    Real F_dr(Real eta) const;
+
+    Spectrum Rd(Real d2) const;
 };
 
 // To add more materials, first create a struct for the material, then overload the () operators for all the
@@ -107,7 +137,9 @@ using Material = std::variant<Lambertian,
                               DisneyGlass,
                               DisneyClearcoat,
                               DisneySheen,
-                              DisneyBSDF>;
+                              DisneyBSDF,
+                              BSSRDF  
+                                >;
 
 /// We allow non-reciprocal BRDFs, so it's important
 /// to distinguish which direction we are tracing the rays.
@@ -128,7 +160,8 @@ Spectrum eval(const Material &material,
               const Vector3 &dir_out,
               const PathVertex &vertex,
               const TexturePool &texture_pool,
-              TransportDirection dir = TransportDirection::TO_LIGHT);
+              TransportDirection dir = TransportDirection::TO_LIGHT
+              );
 
 struct BSDFSampleRecord {
     Vector3 dir_out;

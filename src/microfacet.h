@@ -87,7 +87,7 @@ inline Real D_metal(Vector3 h, Real ax, Real ay, Frame &frame) {
     return  1 / (c_PI * ax * ay * pow(pow(local_h.x / ax, 2) + pow(local_h.y / ay, 2) + local_h.z * local_h.z, 2));
 }
 
-Real G(const Vector3& w, Real ax, Real ay, Frame& frame) {
+inline Real G(const Vector3& w, Real ax, Real ay, Frame& frame) {
     auto lambda = [&](const Vector3& w) -> Real {
         Vector3 local_w = to_local(frame, w);
         Real res = sqrt(1 + ((local_w.x * ax) * (local_w.x * ax) + (local_w.y * ay) * (local_w.y * ay)) / (local_w.z * local_w.z)) - 1;

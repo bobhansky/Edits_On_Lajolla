@@ -1163,7 +1163,42 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
                                               clearcoat,
                                               clearcoat_gloss,
                                               eta});
-    } else if (type == "null") {
+    } 
+    else if (type == "bssrdf") {
+        Texture<Spectrum> base_color = make_constant_spectrum_texture(fromRGB(Vector3{ 0.5, 0.5, 0.5 }));
+		Spectrum sigma_a = make_const_spectrum(0.5);
+        Spectrum sigma_s = make_const_spectrum(0.5);          
+        Real g = 0.0;
+        Real eta = 1.5;
+
+        for (auto child : node.children()) {
+            std::string name = child.attribute("name").value();
+            if (name == "baseColor" || name == "base_color") {
+                base_color = parse_spectrum_texture(
+                    child, texture_map, texture_pool, default_map);
+            }
+            else if (name == "sigma_a") {
+                sigma_a = parse_color(child, default_map);
+                sigma_a.x = max(0.001, sigma_a.x);
+                sigma_a.y = max(0.001, sigma_a.y);
+                sigma_a.z = max(0.001, sigma_a.z);
+            }
+            else if (name == "sigma_s") {
+                sigma_s = parse_color(child, default_map);
+                sigma_s.x = max(0.001, sigma_s.x);
+                sigma_s.y = max(0.001, sigma_s.y);
+                sigma_s.z = max(0.001, sigma_s.z);
+            }
+            else if (name == "anisotropy") {
+                g = parse_float(child.attribute("value").value(), default_map);
+            }
+            else if (name == "eta") {
+                eta = parse_float(child.attribute("value").value(), default_map);
+            }
+        }
+		return std::make_tuple(id, BSSRDF{ base_color, sigma_a, sigma_s, g, eta });
+    }
+    else if (type == "null") {
         // TODO: implement actual null BSDF (the ray will need to pass through the shape)
         return std::make_tuple(id, Lambertian{
             make_constant_spectrum_texture(fromRGB(Vector3{0.0, 0.0, 0.0}))});
