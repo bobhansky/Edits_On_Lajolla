@@ -44,6 +44,11 @@ struct compute_shading_info_op {
     ShadingInfo operator()(const TriangleMesh &mesh) const;
 
     const PathVertex &vertex;
+
+    const TexturePool& texture_pool;
+    const Scene& scene;
+    const RayDifferential& ray_diff;
+    Real distance;
 };
 
 #include "shapes/sphere.inl"
@@ -74,6 +79,7 @@ void init_sampling_dist(Shape &shape) {
     return std::visit(init_sampling_dist_op{}, shape);
 }
 
-ShadingInfo compute_shading_info(const Shape &shape, const PathVertex &vertex) {
-    return std::visit(compute_shading_info_op{vertex}, shape);
+ShadingInfo compute_shading_info(const Shape &shape, const Scene &scene, const PathVertex &vertex, 
+    const TexturePool& texture_pool, const RayDifferential& ray_diff, Real distance) {
+    return std::visit(compute_shading_info_op{vertex, texture_pool, scene, ray_diff, distance }, shape);
 }

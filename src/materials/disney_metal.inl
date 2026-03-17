@@ -123,3 +123,11 @@ std::optional<BSDFSampleRecord>
 TextureSpectrum get_texture_op::operator()(const DisneyMetal &bsdf) const {
     return bsdf.base_color;
 }
+
+TextureSpectrum get_normalMap_op::operator()(const DisneyMetal& bsdf) const {
+    return bsdf.normalMap;
+}
+
+bool has_normal_op::operator()(const DisneyMetal& bsdf) const {
+    return bsdf.hasN;
+}

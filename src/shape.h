@@ -8,6 +8,8 @@
 #include <variant>
 #include <vector>
 
+#include "material.h"
+
 struct PointAndNormal;
 struct PathVertex;
 
@@ -74,7 +76,8 @@ Real surface_area(const Shape &shape);
 void init_sampling_dist(Shape &shape);
 
 /// Embree doesn't calculate some shading information for us. We have to do it ourselves.
-ShadingInfo compute_shading_info(const Shape &shape, const PathVertex &vertex);
+ShadingInfo compute_shading_info(const Shape &shape, const Scene &scene, const PathVertex &vertex, 
+    const TexturePool &texturePool, const RayDifferential& ray_diff, Real distance);
 
 inline void set_material_id(Shape &shape, int material_id) {
     std::visit([&](auto &s) { s.material_id = material_id; }, shape);

@@ -10,76 +10,7 @@ inline Vector3 sample_cos_hemisphere(const Vector2 &rnd_param) {
     };
 }
 
-struct eval_op {
-    Spectrum operator()(const Lambertian &bsdf) const;
-    Spectrum operator()(const RoughPlastic &bsdf) const;
-    Spectrum operator()(const RoughDielectric &bsdf) const;
-    Spectrum operator()(const DisneyDiffuse &bsdf) const;
-    Spectrum operator()(const DisneyMetal &bsdf) const;
-    Spectrum operator()(const DisneyGlass &bsdf) const;
-    Spectrum operator()(const DisneyClearcoat &bsdf) const;
-    Spectrum operator()(const DisneySheen &bsdf) const;
-    Spectrum operator()(const DisneyBSDF &bsdf) const;
-	Spectrum operator()(const BSSRDF& bssrdf) const;
 
-    const Vector3 &dir_in;          // view dir
-    const Vector3 &dir_out;         // light dir
-    const PathVertex &vertex;
-    const TexturePool &texture_pool;
-    const TransportDirection &dir;
-};
-
-struct pdf_sample_bsdf_op {
-    Real operator()(const Lambertian &bsdf) const;
-    Real operator()(const RoughPlastic &bsdf) const;
-    Real operator()(const RoughDielectric &bsdf) const;
-    Real operator()(const DisneyDiffuse &bsdf) const;
-    Real operator()(const DisneyMetal &bsdf) const;
-    Real operator()(const DisneyGlass &bsdf) const;
-    Real operator()(const DisneyClearcoat &bsdf) const;
-    Real operator()(const DisneySheen &bsdf) const;
-    Real operator()(const DisneyBSDF &bsdf) const;
-    Real operator()(const BSSRDF& bssrdf) const;
-
-    const Vector3 &dir_in;
-    const Vector3 &dir_out;
-    const PathVertex &vertex;
-    const TexturePool &texture_pool;
-    const TransportDirection &dir;
-};
-
-struct sample_bsdf_op {
-    std::optional<BSDFSampleRecord> operator()(const Lambertian &bsdf) const;
-    std::optional<BSDFSampleRecord> operator()(const RoughPlastic &bsdf) const;
-    std::optional<BSDFSampleRecord> operator()(const RoughDielectric &bsdf) const;
-    std::optional<BSDFSampleRecord> operator()(const DisneyDiffuse &bsdf) const;
-    std::optional<BSDFSampleRecord> operator()(const DisneyMetal &bsdf) const;
-    std::optional<BSDFSampleRecord> operator()(const DisneyGlass &bsdf) const;
-    std::optional<BSDFSampleRecord> operator()(const DisneyClearcoat &bsdf) const;
-    std::optional<BSDFSampleRecord> operator()(const DisneySheen &bsdf) const;
-    std::optional<BSDFSampleRecord> operator()(const DisneyBSDF &bsdf) const;
-    std::optional<BSDFSampleRecord> operator()(const BSSRDF& bssrdf) const;
-
-    const Vector3 &dir_in;
-    const PathVertex &vertex;
-    const TexturePool &texture_pool;
-    const Vector2 &rnd_param_uv;
-    const Real &rnd_param_w;
-    const TransportDirection &dir;
-};
-
-struct get_texture_op {
-    TextureSpectrum operator()(const Lambertian &bsdf) const;
-    TextureSpectrum operator()(const RoughPlastic &bsdf) const;
-    TextureSpectrum operator()(const RoughDielectric &bsdf) const;
-    TextureSpectrum operator()(const DisneyDiffuse &bsdf) const;
-    TextureSpectrum operator()(const DisneyMetal &bsdf) const;
-    TextureSpectrum operator()(const DisneyGlass &bsdf) const;
-    TextureSpectrum operator()(const DisneyClearcoat &bsdf) const;
-    TextureSpectrum operator()(const DisneySheen &bsdf) const;
-    TextureSpectrum operator()(const DisneyBSDF &bsdf) const;
-    TextureSpectrum operator()(const BSSRDF& bssrdf) const;
-};
 
 #include "materials/lambertian.inl"
 #include "materials/roughplastic.inl"
@@ -125,4 +56,13 @@ Real pdf_sample_bsdf(const Material &material,
 
 TextureSpectrum get_texture(const Material &material) {
     return std::visit(get_texture_op{}, material);
+}
+
+
+Texture<Spectrum> get_normalMap(const Material& material) {
+    return std::visit(get_normalMap_op{}, material);
+}
+
+bool has_normal(const Material& material) {
+    return std::visit(has_normal_op{}, material);
 }

@@ -15,19 +15,23 @@ Spectrum eval_op::operator()(const DisneyBSDF &bsdf) const {
     Spectrum f_diffuse = eval_op::operator()(DisneyDiffuse{
         bsdf.base_color,
         bsdf.roughness,
-        bsdf.subsurface });
+        bsdf.subsurface,
+        bsdf.normalMap});
 
     Spectrum f_sheen = eval_op::operator()(DisneySheen{
         bsdf.base_color,
-		bsdf.sheen_tint });
+		bsdf.sheen_tint,
+        bsdf.normalMap });
 
 	Spectrum f_clearcoat = eval_op::operator()(DisneyClearcoat{
-        bsdf.clearcoat_gloss });
+        bsdf.clearcoat_gloss,
+        bsdf.normalMap });
 
     Spectrum f_glass = eval_op::operator()(DisneyGlass{
         bsdf.base_color,
         bsdf.roughness,
         bsdf.anisotropic,
+        bsdf.normalMap,
         bsdf.eta });
 
 
@@ -270,6 +274,7 @@ std::optional<BSDFSampleRecord>
             bsdf.base_color,
             bsdf.roughness,
             bsdf.anisotropic,
+            bsdf.normalMap,
             bsdf.eta });
 	}
 
@@ -281,19 +286,22 @@ std::optional<BSDFSampleRecord>
         return sample_bsdf_op::operator()(DisneyDiffuse{
             bsdf.base_color,
             bsdf.roughness,
-            bsdf.subsurface });
+            bsdf.subsurface,
+            bsdf.normalMap});
     }
     else if (r < w_diffuse + w_metal) {
         // sample metal
         return sample_bsdf_op::operator()(DisneyMetal{
            bsdf.base_color,
            bsdf.roughness,
-           bsdf.anisotropic });
+           bsdf.anisotropic ,
+            bsdf.normalMap });
     }
     else if (r < w_diffuse + w_metal + w_clearcoat) {
         // sample clearcoat
         return sample_bsdf_op::operator()(DisneyClearcoat{
-			bsdf.clearcoat_gloss });
+			bsdf.clearcoat_gloss,
+            bsdf.normalMap });
     }
     else {
         // sample glass
@@ -349,4 +357,12 @@ std::optional<BSDFSampleRecord>
 
 TextureSpectrum get_texture_op::operator()(const DisneyBSDF &bsdf) const {
     return bsdf.base_color;
+}
+
+TextureSpectrum get_normalMap_op::operator()(const DisneyBSDF& bsdf) const {
+    return bsdf.normalMap;
+}
+
+bool has_normal_op::operator()(const DisneyBSDF& bsdf) const {
+    return bsdf.hasN;
 }

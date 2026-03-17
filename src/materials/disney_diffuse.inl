@@ -84,3 +84,11 @@ std::optional<BSDFSampleRecord> sample_bsdf_op::operator()(const DisneyDiffuse &
 TextureSpectrum get_texture_op::operator()(const DisneyDiffuse &bsdf) const {
     return bsdf.base_color;
 }
+
+TextureSpectrum get_normalMap_op::operator()(const DisneyDiffuse& bsdf) const {
+    return bsdf.normalMap;
+}
+
+bool has_normal_op::operator()(const DisneyDiffuse& bsdf) const {
+    return bsdf.hasN;
+}

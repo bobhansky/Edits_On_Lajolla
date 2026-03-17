@@ -52,3 +52,12 @@ std::optional<BSDFSampleRecord> sample_bsdf_op::operator()(const Lambertian &bsd
 TextureSpectrum get_texture_op::operator()(const Lambertian &bsdf) const {
     return bsdf.reflectance;
 }
+
+
+TextureSpectrum get_normalMap_op::operator()(const Lambertian& bsdf) const {
+    return bsdf.normalMap;
+}
+
+bool has_normal_op::operator()(const Lambertian& bsdf) const {
+    return bsdf.hasN;
+}

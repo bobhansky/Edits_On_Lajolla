@@ -97,6 +97,7 @@ Image3 imread3(const fs::path &filename) {
 #endif
         img = Image3(w, h);
         if (data == nullptr) {
+            std::cout << std::string("Failure when loading image: ") + filename.string() << std::endl;
             Error(std::string("Failure when loading image: ") + filename.string());
         }
         int j = 0;

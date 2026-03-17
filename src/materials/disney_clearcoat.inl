@@ -116,3 +116,11 @@ std::optional<BSDFSampleRecord>
 TextureSpectrum get_texture_op::operator()(const DisneyClearcoat &bsdf) const {
     return make_constant_spectrum_texture(make_zero_spectrum());
 }
+
+TextureSpectrum get_normalMap_op::operator()(const DisneyClearcoat& bsdf) const {
+    return bsdf.normalMap;
+}
+
+bool has_normal_op::operator()(const DisneyClearcoat& bsdf) const {
+    return bsdf.hasN;
+}

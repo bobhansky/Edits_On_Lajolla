@@ -91,8 +91,9 @@ Spectrum henyeyGreenstein_phase(Real g, Vector3 &dir_in, Vector3 &dir_out){
 }
 
 // constructor
-BSSRDF::BSSRDF(Texture<Spectrum> base_color, Spectrum sigma_a, Spectrum sigma_s, Real g, Real eta)
-	: base_color(base_color), sigma_a_(sigma_a), sigma_s_(sigma_s), g_(g), eta_(eta) {
+BSSRDF::BSSRDF(Texture<Spectrum> base_color, Texture<Spectrum> normMap, Spectrum sigma_a, Spectrum sigma_s, Real g, Real eta, bool hN)
+	: base_color(base_color), normalMap(normMap), sigma_a_(sigma_a), sigma_s_(sigma_s), g_(g), eta_(eta) {
+	hasN = hN;
 
 	simgma_s_prime_ = sigma_s_ * (make_const_spectrum(1) - make_const_spectrum(g_));
 	sigma_t_prime_ = sigma_a_ + simgma_s_prime_;
@@ -180,20 +181,20 @@ std::tuple<BSSRDFSampleAxis, Ray, Real> sampleProbeRay(const PathVertex& vertex,
 	if (rnd_u_axis <= 0.5) {
 		point = vertex.position + to_world(vertex.shading_frame, Vector3{ p_sample.x, p_sample.y, -len_3rd });
 		axis = NAxis;
-		dir = vertex.shading_frame.n;  // dir along normal
+		dir = vertex.geometric_normal;  // dir along normal
 		pdf *= 0.5;
 	}
 	// 25% sample U axis
 	else if (rnd_u_axis <= 0.75) {
 		point = vertex.position + to_world(vertex.shading_frame, Vector3{ -len_3rd, p_sample.x, p_sample.y });
-		dir = vertex.shading_frame.x;  // dir along U axis
+		dir = vertex.geometric_normal;  // dir along U axis
 		axis = UAxis;
 		pdf *= 0.25;
 	}
 	// 25% sample V axis
 	else {
 		point = vertex.position + to_world(vertex.shading_frame, Vector3{ p_sample.x, -len_3rd, p_sample.y });
-		dir = vertex.shading_frame.y;  // dir along V axis
+		dir = vertex.geometric_normal;  // dir along V axis
 		axis = VAxis;
 		pdf *= 0.25;
 	}
@@ -207,7 +208,7 @@ std::tuple<BSSRDFSampleAxis, Ray, Real> sampleProbeRay(const PathVertex& vertex,
 Real MISWeight(const PathVertex& vertex, const Vector3& pIn, const Vector3& nIn, BSSRDFSampleAxis mainAxis, Real sigmaTr, Real pdf, Real Rmax) {
 	Vector3 pWo = vertex.position;
 	Real weight = 0;
-	Vector3 N = vertex.geometric_normal;
+	Vector3 N = vertex.shading_frame.n;
 	Vector3 U = vertex.shading_frame.x;
 	Vector3 V = vertex.shading_frame.y;
 

@@ -30,5 +30,11 @@ TextureSpectrum get_texture_op::operator()(const BSSRDF& bssrdf) const {
 	return bssrdf.base_color;
 }
 
+TextureSpectrum get_normalMap_op::operator()(const BSSRDF& bsdf) const {
+	return bsdf.normalMap;
+}
 
 
+bool has_normal_op::operator()(const BSSRDF& bsdf) const {
+	return bsdf.hasN;
+}

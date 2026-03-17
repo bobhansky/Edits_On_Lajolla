@@ -1,3 +1,6 @@
+#pragma once
+#include "scene.h"
+
 uint32_t register_embree_op::operator()(const TriangleMesh &mesh) const {
     RTCGeometry rtc_geom = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
     // A geomID is the ID associated with the shape inside Embree.
@@ -133,6 +136,7 @@ ShadingInfo compute_shading_info_op::operator()(const TriangleMesh &mesh) const 
     // Now let's get the shading normal & mean_curvature.
     // By default it is the geometry normal and we have zero curvature.
     Vector3 shading_normal = vertex.geometric_normal;
+
     Real mean_curvature = 0;
     Vector3 tangent, bitangent;
     // However if we have vertex normals, that overrides the geometry normal.
@@ -140,10 +144,14 @@ ShadingInfo compute_shading_info_op::operator()(const TriangleMesh &mesh) const 
         Vector3 n0 = mesh.normals[index[0]],
                 n1 = mesh.normals[index[1]],
                 n2 = mesh.normals[index[2]];
+
+        
         shading_normal = normalize(
             (1 - vertex.st[0] - vertex.st[1]) * n0 + 
                                 vertex.st[0] * n1 +
                                 vertex.st[1] * n2);
+        
+        
         // dpdu may not be orthogonal to shading normal:
         // subtract the projection of shading_normal onto dpdu to make them orthogonal
         tangent = normalize(dpdu - shading_normal * dot(shading_normal, dpdu));
@@ -164,6 +172,37 @@ ShadingInfo compute_shading_info_op::operator()(const TriangleMesh &mesh) const 
     }
 
     Frame shading_frame(tangent, bitangent, shading_normal);
-    return ShadingInfo{uv, shading_frame, mean_curvature,
-                       max(length(dpdu), length(dpdv)) /* inv_uv_size */};
+
+    // 3/16/2026:  NORMAL PRETURB 
+    // 3/16/2026 purterb shading normal Added here
+
+    Material mat = scene.materials[vertex.material_id];
+    // no normal map
+    if ( !std::visit(has_normal_op{},(mat) )) {
+        return ShadingInfo{ uv, shading_frame, mean_curvature,
+                      max(length(dpdu), length(dpdv)) /* inv_uv_size */ };
+    }
+
+    auto normalMap = std::visit(get_normalMap_op{}, mat);
+
+    Real ray_radius = transfer(ray_diff, distance);
+    Real inv_uv_size = max(length(dpdu), length(dpdv));
+    Real uv_screen_size = ray_radius / inv_uv_size;
+
+
+    Vector3 normal = eval(normalMap, uv, uv_screen_size, texture_pool);
+    normal = { normal.x * 2 - 1, normal.y * 2 - 1, normal.z * 2 - 1 };
+    normal = normalize(normal);
+
+    // https://github.com/BachiLi/redner/blob/f355e8c445b2cba1dd7d75b8e137d736c7270520/src/material.h#L274
+    auto n_world = to_world(shading_frame, normal);
+    auto perturb_n = normalize(n_world);
+    auto dot_pn_dpdu = dot(perturb_n, dpdu);
+    auto perturb_x = normalize(
+        dpdu - perturb_n * dot_pn_dpdu);
+    auto perturb_y = cross(perturb_n, perturb_x);
+    shading_frame = Frame(perturb_x, perturb_y, perturb_n);
+    
+    return ShadingInfo{ uv, shading_frame, mean_curvature,
+                       max(length(dpdu), length(dpdv)) /* inv_uv_size */ };
 }

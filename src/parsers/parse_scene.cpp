@@ -920,6 +920,8 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
         const std::string &parent_id = "") {
     std::string type = node.attribute("type").value();
     std::string id = parent_id;
+
+    bool hasNormal = false;
     if (!node.attribute("id").empty()) {
         id = node.attribute("id").value();
     }
@@ -933,14 +935,23 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
     } else if (type == "diffuse") {
         Texture<Spectrum> reflectance =
             make_constant_spectrum_texture(fromRGB(Vector3{0.5, 0.5, 0.5}));
+
+        Texture<Spectrum> normalMap = make_constant_spectrum_texture(fromRGB(Vector3{ -1, -1, -1 }));
+
         for (auto child : node.children()) {
             std::string name = child.attribute("name").value();
             if (name == "reflectance") {
                 reflectance = parse_spectrum_texture(
                     child, texture_map, texture_pool, default_map);
             }
+
+            if (name == "normalMap") {
+                normalMap = parse_spectrum_texture(
+                    child, texture_map, texture_pool, default_map);
+                hasNormal = 1;
+            }
         }
-        return std::make_tuple(id, Lambertian{reflectance});
+        return std::make_tuple(id, Lambertian{reflectance, normalMap, hasNormal});
     } else if (type == "roughplastic" || type == "plastic") {
         Texture<Spectrum> diffuse_reflectance =
             make_constant_spectrum_texture(fromRGB(Vector3{0.5, 0.5, 0.5}));
@@ -951,6 +962,8 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
             // Approximate plastic materials with very small roughness
             roughness = make_constant_float_texture(Real(0.01));
         }
+        Texture<Spectrum> normalMap = make_constant_spectrum_texture(fromRGB(Vector3{ -1, -1, -1 }));
+
         Real intIOR = 1.49;
         Real extIOR = 1.000277;
         for (auto child : node.children()) {
@@ -958,9 +971,14 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
             if (name == "diffuseReflectance" || name == "diffuse_reflectance") {
                 diffuse_reflectance = parse_spectrum_texture(
                     child, texture_map, texture_pool, default_map);
-            } else if (name == "specularReflectance" || name == "specular_reflectance") {
+            }
+            else if (name == "specularReflectance" || name == "specular_reflectance") {
                 specular_reflectance = parse_spectrum_texture(
                     child, texture_map, texture_pool, default_map);
+            }else if (name == "normalMap") {
+                normalMap = parse_spectrum_texture(
+                    child, texture_map, texture_pool, default_map);
+                hasNormal = 1;
             } else if (name == "alpha") {
                 roughness = alpha_to_roughness(child, texture_map, texture_pool, default_map);
             } else if (name == "roughness") {
@@ -972,13 +990,14 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
             }
         }
         return std::make_tuple(id, RoughPlastic{
-            diffuse_reflectance, specular_reflectance, roughness, intIOR / extIOR});
+            diffuse_reflectance, specular_reflectance, roughness, normalMap, intIOR / extIOR, hasNormal});
     } else if (type == "roughdielectric" || type == "dielectric") {
         Texture<Spectrum> specular_reflectance =
             make_constant_spectrum_texture(fromRGB(Vector3{1, 1, 1}));
         Texture<Spectrum> specular_transmittance =
             make_constant_spectrum_texture(fromRGB(Vector3{1, 1, 1}));
         Texture<Real> roughness = make_constant_float_texture(Real(0.1));
+        Texture<Spectrum> normalMap = make_constant_spectrum_texture(fromRGB(Vector3{ -1, -1, -1 }));
         if (type == "dielectric") {
             // Approximate plastic materials with very small roughness
             roughness = make_constant_float_texture(Real(0.01));
@@ -998,19 +1017,26 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
             } else if (name == "roughness") {
                 roughness = parse_float_texture(
                     child, texture_map, texture_pool, default_map);
-            } else if (name == "intIOR" || name == "int_ior") {
+            }
+            else if (name == "normalMap") {
+                normalMap = parse_spectrum_texture(
+                    child, texture_map, texture_pool, default_map);
+                hasNormal = 1;
+            }
+            else if (name == "intIOR" || name == "int_ior") {
                 intIOR = parse_float(child.attribute("value").value(), default_map);
             } else if (name == "extIOR" || name == "ext_ior") {
                 extIOR = parse_float(child.attribute("value").value(), default_map); 
             }
         }
         return std::make_tuple(id, RoughDielectric{
-            specular_reflectance, specular_transmittance, roughness, intIOR / extIOR});
+            specular_reflectance, specular_transmittance, roughness, normalMap, intIOR / extIOR, hasNormal});
     } else if (type == "disneydiffuse") {
         Texture<Spectrum> base_color =
             make_constant_spectrum_texture(fromRGB(Vector3{0.5, 0.5, 0.5}));
         Texture<Real> roughness = make_constant_float_texture(Real(0.5));
         Texture<Real> subsurface = make_constant_float_texture(Real(0));
+        Texture<Spectrum> normalMap = make_constant_spectrum_texture(fromRGB(Vector3{ -1, -1, -1 }));
         for (auto child : node.children()) {
             std::string name = child.attribute("name").value();
             if (name == "baseColor" || name == "base_color") {
@@ -1023,8 +1049,13 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
                 subsurface = parse_float_texture(
                     child, texture_map, texture_pool, default_map);
             }
+            else if (name == "normalMap") {
+                normalMap = parse_spectrum_texture(
+                    child, texture_map, texture_pool, default_map);
+                hasNormal = 1;
+            }
         }
-        return std::make_tuple(id, DisneyDiffuse{base_color, roughness, subsurface});
+        return std::make_tuple(id, DisneyDiffuse{base_color, roughness, subsurface, normalMap, hasNormal});
     } else if (type == "disneymetal") {
         Texture<Spectrum> base_color =
             make_constant_spectrum_texture(fromRGB(Vector3{0.5, 0.5, 0.5}));
@@ -1032,6 +1063,7 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
             make_constant_float_texture(Real(0.5));
         Texture<Real> anisotropic =
             make_constant_float_texture(Real(0.0));
+        Texture<Spectrum> normalMap = make_constant_spectrum_texture(fromRGB(Vector3{ -1, -1, -1 }));
         for (auto child : node.children()) {
             std::string name = child.attribute("name").value();
             if (name == "baseColor" || name == "base_color") {
@@ -1044,12 +1076,18 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
                 anisotropic = parse_float_texture(
                     child, texture_map, texture_pool, default_map);
             }
+            else if (name == "normalMap") {
+                normalMap = parse_spectrum_texture(
+                    child, texture_map, texture_pool, default_map);
+                hasNormal = 1;
+            }
         }
-        return std::make_tuple(id, DisneyMetal{base_color, roughness, anisotropic});
+        return std::make_tuple(id, DisneyMetal{base_color, roughness, anisotropic, normalMap, hasNormal});
     } else if (type == "disneyglass") {
         Texture<Spectrum> base_color = make_constant_spectrum_texture(fromRGB(Vector3{0.5, 0.5, 0.5}));
         Texture<Real> roughness = make_constant_float_texture(Real(0.5));
         Texture<Real> anisotropic = make_constant_float_texture(Real(0.0));
+        Texture<Spectrum> normalMap = make_constant_spectrum_texture(fromRGB(Vector3{ -1, -1, -1 }));
         Real eta = Real(1.5);
         for (auto child : node.children()) {
             std::string name = child.attribute("name").value();
@@ -1065,22 +1103,34 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
             } else if (name == "eta") {
                 eta = parse_float(child.attribute("value").value(), default_map);
             }
+            else if (name == "normalMap") {
+                normalMap = parse_spectrum_texture(
+                    child, texture_map, texture_pool, default_map);
+                hasNormal = 1;
+            }
         }
-        return std::make_tuple(id, DisneyGlass{base_color, roughness, anisotropic, eta});
+        return std::make_tuple(id, DisneyGlass{base_color, roughness, anisotropic, normalMap, eta, hasNormal});
     } else if (type == "disneyclearcoat") {
         Texture<Real> clearcoat_gloss = make_constant_float_texture(Real(1.0));
+        Texture<Spectrum> normalMap = make_constant_spectrum_texture(fromRGB(Vector3{ -1, -1, -1 }));
         for (auto child : node.children()) {
             std::string name = child.attribute("name").value();
             if (name == "clearcoatGloss") {
                 clearcoat_gloss = parse_float_texture(
                     child, texture_map, texture_pool, default_map);
             }
+            else if (name == "normalMap") {
+                normalMap = parse_spectrum_texture(
+                    child, texture_map, texture_pool, default_map);
+                hasNormal = 1;
+            }
         }
-        return std::make_tuple(id, DisneyClearcoat{clearcoat_gloss});
+        return std::make_tuple(id, DisneyClearcoat{clearcoat_gloss, normalMap, hasNormal});
     } else if (type == "disneysheen") {
         Texture<Spectrum> base_color =
             make_constant_spectrum_texture(fromRGB(Vector3{0.5, 0.5, 0.5}));
         Texture<Real> sheen_tint = make_constant_float_texture(Real(0.5));
+        Texture<Spectrum> normalMap = make_constant_spectrum_texture(fromRGB(Vector3{ -1, -1, -1 }));
         for (auto child : node.children()) {
             std::string name = child.attribute("name").value();
             if (name == "baseColor" || name == "base_color") {
@@ -1090,8 +1140,13 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
                 sheen_tint = parse_float_texture(
                     child, texture_map, texture_pool, default_map);
             }
+            else if (name == "normalMap") {
+                normalMap = parse_spectrum_texture(
+                    child, texture_map, texture_pool, default_map);
+                hasNormal = 1;
+            }
         }
-        return std::make_tuple(id, DisneySheen{base_color, sheen_tint});
+        return std::make_tuple(id, DisneySheen{base_color, sheen_tint, normalMap, hasNormal});
     } else if (type == "disneybsdf" || type == "principled") {
         Texture<Spectrum> base_color = make_constant_spectrum_texture(fromRGB(Vector3{0.5, 0.5, 0.5}));
         Texture<Real> specular_transmission = make_constant_float_texture(Real(0));
@@ -1105,6 +1160,7 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
         Texture<Real> sheen_tint = make_constant_float_texture(Real(0.5));
         Texture<Real> clearcoat = make_constant_float_texture(Real(0));
         Texture<Real> clearcoat_gloss = make_constant_float_texture(Real(1));
+        Texture<Spectrum> normalMap = make_constant_spectrum_texture(fromRGB(Vector3{ -1, -1, -1 }));
         Real eta = Real(1.5);
         for (auto child : node.children()) {
             std::string name = child.attribute("name").value();
@@ -1149,6 +1205,11 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
             } else if (name == "eta") {
                 eta = parse_float(child.attribute("value").value(), default_map);
             }
+            else if (name == "normalMap") {
+                normalMap = parse_spectrum_texture(
+                    child, texture_map, texture_pool, default_map);
+                hasNormal = 1;
+            }
         }
         return std::make_tuple(id, DisneyBSDF{base_color,
                                               specular_transmission,
@@ -1162,7 +1223,8 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
                                               sheen_tint,
                                               clearcoat,
                                               clearcoat_gloss,
-                                              eta});
+                                              normalMap,
+                                                eta, hasNormal});
     } 
     else if (type == "bssrdf") {
         Texture<Spectrum> base_color = make_constant_spectrum_texture(fromRGB(Vector3{ 0.5, 0.5, 0.5 }));
@@ -1170,6 +1232,7 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
         Spectrum sigma_s = make_const_spectrum(0.5);          
         Real g = 0.0;
         Real eta = 1.5;
+        Texture<Spectrum> normalMap = make_constant_spectrum_texture(fromRGB(Vector3{ -1, -1, -1 }));
 
         for (auto child : node.children()) {
             std::string name = child.attribute("name").value();
@@ -1195,8 +1258,13 @@ std::tuple<std::string /* ID */, Material> parse_bsdf(
             else if (name == "eta") {
                 eta = parse_float(child.attribute("value").value(), default_map);
             }
+            else if (name == "normalMap") {
+                normalMap = parse_spectrum_texture(
+                    child, texture_map, texture_pool, default_map);
+                hasNormal = 1;
+            }
         }
-		return std::make_tuple(id, BSSRDF{ base_color, sigma_a, sigma_s, g, eta });
+		return std::make_tuple(id, BSSRDF{ base_color, normalMap, sigma_a, sigma_s, g, eta , hasNormal});
     }
     else if (type == "null") {
         // TODO: implement actual null BSDF (the ray will need to pass through the shape)

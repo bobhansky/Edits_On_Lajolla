@@ -11,6 +11,9 @@ struct PathVertex;
 
 struct Lambertian {
     Texture<Spectrum> reflectance;
+
+    Texture<Spectrum> normalMap;
+    bool hasN;
 };
 
 /// The RoughPlastic material is a 2-layer BRDF with a dielectric coating
@@ -27,9 +30,12 @@ struct RoughPlastic {
     Texture<Spectrum> specular_reflectance;
     Texture<Real> roughness;
 
+    Texture<Spectrum> normalMap;
+
     // Note that the material is not transmissive.
     // This is for the IOR between the dielectric layer and the diffuse layer.
     Real eta; // internal IOR / externalIOR
+    bool hasN;
 };
 
 /// The roughdielectric BSDF implements a version of Walter et al.'s
@@ -42,7 +48,10 @@ struct RoughDielectric {
     Texture<Spectrum> specular_transmittance;
     Texture<Real> roughness;
 
+    Texture<Spectrum> normalMap;
+
     Real eta; // internal IOR / externalIOR
+    bool hasN;
 };
 
 /// For homework 1: the diffuse and subsurface component of the Disney BRDF.
@@ -50,6 +59,9 @@ struct DisneyDiffuse {
     Texture<Spectrum> base_color;
     Texture<Real> roughness;
     Texture<Real> subsurface;
+
+    Texture<Spectrum> normalMap;
+    bool hasN;
 };
 
 /// For homework 1: the metallic component of the Disney BRDF.
@@ -57,6 +69,9 @@ struct DisneyMetal {
     Texture<Spectrum> base_color;
     Texture<Real> roughness;
     Texture<Real> anisotropic;
+
+    Texture<Spectrum> normalMap;
+    bool hasN;
 };
 
 /// For homework 1: the transmissive component of the Disney BRDF.
@@ -65,18 +80,27 @@ struct DisneyGlass {
     Texture<Real> roughness;
     Texture<Real> anisotropic;
 
+    Texture<Spectrum> normalMap;
+
     Real eta; // internal IOR / externalIOR
+    bool hasN;
 };
 
 /// For homework 1: the clearcoat component of the Disney BRDF.
 struct DisneyClearcoat {
     Texture<Real> clearcoat_gloss;
+
+    Texture<Spectrum> normalMap;
+    bool hasN;
 };
 
 /// For homework 1: the sheen component of the Disney BRDF.
 struct DisneySheen {
     Texture<Spectrum> base_color;
     Texture<Real> sheen_tint;
+
+    Texture<Spectrum> normalMap;
+    bool hasN;
 };
 
 /// For homework 1: the whole Disney BRDF.
@@ -94,13 +118,18 @@ struct DisneyBSDF {
     Texture<Real> clearcoat;
     Texture<Real> clearcoat_gloss;
 
+    Texture<Spectrum> normalMap;
+
     Real eta;
+
+    bool hasN;
 
 };
 
 struct BSSRDF {
 public:
-    Texture<Spectrum> base_color;
+    Texture<Spectrum> base_color;   // I didn;t use it at all
+    Texture<Spectrum> normalMap;
 
     Spectrum sigma_a_;          // absorb coefficient
 	Spectrum sigma_s_;          // scattering coefficient
@@ -115,12 +144,15 @@ public:
     Real Rmax_;
 
     Real eta_; 
+    bool hasN;
 
     BSSRDF(Texture<Spectrum> base_color,
+            Texture<Spectrum> normalMap,
            Spectrum sigma_a,
            Spectrum sigma_s,
            Real g,
-		   Real eta);
+		   Real eta,
+            bool hasN);
 
     Real F_dr(Real eta) const;
 
@@ -201,3 +233,106 @@ Real pdf_sample_bsdf(const Material &material,
 /// Return a texture from the material for debugging.
 /// If the material contains multiple textures, return an arbitrary one.
 TextureSpectrum get_texture(const Material &material);
+
+
+Texture<Spectrum> get_normalMap(const Material& material);
+
+bool has_normal(const Material& material);
+
+
+struct eval_op {
+    Spectrum operator()(const Lambertian& bsdf) const;
+    Spectrum operator()(const RoughPlastic& bsdf) const;
+    Spectrum operator()(const RoughDielectric& bsdf) const;
+    Spectrum operator()(const DisneyDiffuse& bsdf) const;
+    Spectrum operator()(const DisneyMetal& bsdf) const;
+    Spectrum operator()(const DisneyGlass& bsdf) const;
+    Spectrum operator()(const DisneyClearcoat& bsdf) const;
+    Spectrum operator()(const DisneySheen& bsdf) const;
+    Spectrum operator()(const DisneyBSDF& bsdf) const;
+    Spectrum operator()(const BSSRDF& bssrdf) const;
+
+    const Vector3& dir_in;          // view dir
+    const Vector3& dir_out;         // light dir
+    const PathVertex& vertex;
+    const TexturePool& texture_pool;
+    const TransportDirection& dir;
+};
+
+struct pdf_sample_bsdf_op {
+    Real operator()(const Lambertian& bsdf) const;
+    Real operator()(const RoughPlastic& bsdf) const;
+    Real operator()(const RoughDielectric& bsdf) const;
+    Real operator()(const DisneyDiffuse& bsdf) const;
+    Real operator()(const DisneyMetal& bsdf) const;
+    Real operator()(const DisneyGlass& bsdf) const;
+    Real operator()(const DisneyClearcoat& bsdf) const;
+    Real operator()(const DisneySheen& bsdf) const;
+    Real operator()(const DisneyBSDF& bsdf) const;
+    Real operator()(const BSSRDF& bssrdf) const;
+
+    const Vector3& dir_in;
+    const Vector3& dir_out;
+    const PathVertex& vertex;
+    const TexturePool& texture_pool;
+    const TransportDirection& dir;
+};
+
+struct sample_bsdf_op {
+    std::optional<BSDFSampleRecord> operator()(const Lambertian& bsdf) const;
+    std::optional<BSDFSampleRecord> operator()(const RoughPlastic& bsdf) const;
+    std::optional<BSDFSampleRecord> operator()(const RoughDielectric& bsdf) const;
+    std::optional<BSDFSampleRecord> operator()(const DisneyDiffuse& bsdf) const;
+    std::optional<BSDFSampleRecord> operator()(const DisneyMetal& bsdf) const;
+    std::optional<BSDFSampleRecord> operator()(const DisneyGlass& bsdf) const;
+    std::optional<BSDFSampleRecord> operator()(const DisneyClearcoat& bsdf) const;
+    std::optional<BSDFSampleRecord> operator()(const DisneySheen& bsdf) const;
+    std::optional<BSDFSampleRecord> operator()(const DisneyBSDF& bsdf) const;
+    std::optional<BSDFSampleRecord> operator()(const BSSRDF& bssrdf) const;
+
+    const Vector3& dir_in;
+    const PathVertex& vertex;
+    const TexturePool& texture_pool;
+    const Vector2& rnd_param_uv;
+    const Real& rnd_param_w;
+    const TransportDirection& dir;
+};
+
+struct get_texture_op {
+    TextureSpectrum operator()(const Lambertian& bsdf) const;
+    TextureSpectrum operator()(const RoughPlastic& bsdf) const;
+    TextureSpectrum operator()(const RoughDielectric& bsdf) const;
+    TextureSpectrum operator()(const DisneyDiffuse& bsdf) const;
+    TextureSpectrum operator()(const DisneyMetal& bsdf) const;
+    TextureSpectrum operator()(const DisneyGlass& bsdf) const;
+    TextureSpectrum operator()(const DisneyClearcoat& bsdf) const;
+    TextureSpectrum operator()(const DisneySheen& bsdf) const;
+    TextureSpectrum operator()(const DisneyBSDF& bsdf) const;
+    TextureSpectrum operator()(const BSSRDF& bssrdf) const;
+};
+
+struct get_normalMap_op {
+    TextureSpectrum operator()(const Lambertian& bsdf) const;
+    TextureSpectrum operator()(const RoughPlastic& bsdf) const;
+    TextureSpectrum operator()(const RoughDielectric& bsdf) const;
+    TextureSpectrum operator()(const DisneyDiffuse& bsdf) const;
+    TextureSpectrum operator()(const DisneyMetal& bsdf) const;
+    TextureSpectrum operator()(const DisneyGlass& bsdf) const;
+    TextureSpectrum operator()(const DisneyClearcoat& bsdf) const;
+    TextureSpectrum operator()(const DisneySheen& bsdf) const;
+    TextureSpectrum operator()(const DisneyBSDF& bsdf) const;
+    TextureSpectrum operator()(const BSSRDF& bssrdf) const;
+};
+
+struct has_normal_op {
+    bool operator()(const Lambertian& bsdf) const;
+    bool operator()(const RoughPlastic& bsdf) const;
+    bool operator()(const RoughDielectric& bsdf) const;
+    bool operator()(const DisneyDiffuse& bsdf) const;
+    bool operator()(const DisneyMetal& bsdf) const;
+    bool operator()(const DisneyGlass& bsdf) const;
+    bool operator()(const DisneyClearcoat& bsdf) const;
+    bool operator()(const DisneySheen& bsdf) const;
+    bool operator()(const DisneyBSDF& bsdf) const;
+    bool operator()(const BSSRDF& bssrdf) const;
+};

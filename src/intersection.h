@@ -6,6 +6,9 @@
 #include "spectrum.h"
 #include "vector.h"
 
+#include "material.h"
+
+
 #include <optional>
 
 struct Scene;

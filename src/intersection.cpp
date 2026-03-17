@@ -47,7 +47,9 @@ std::optional<PathVertex> intersect(const Scene &scene,
     vertex.exterior_medium_id = get_exterior_medium_id(shape);
     vertex.st = Vector2{rtc_hit.u, rtc_hit.v};
 
-    ShadingInfo shading_info = compute_shading_info(scene.shapes[vertex.shape_id], vertex);
+    ShadingInfo shading_info = compute_shading_info(scene.shapes[vertex.shape_id], scene, vertex, 
+        scene.texture_pool, ray_diff, distance(ray.org, vertex.position));
+
     vertex.shading_frame = shading_info.shading_frame;
     vertex.uv = shading_info.uv;
     vertex.mean_curvature = shading_info.mean_curvature;
