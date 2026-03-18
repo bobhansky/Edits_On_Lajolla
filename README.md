@@ -1,6 +1,6 @@
 ## This is a UCSD CSE272 course project written on top of the lajolla basecode, implementing the Disney Principled BSDF (2012), Volumtric Path Tracing, and BSSRDF
-
-TODO: Some technical details explaination (noted on 1/26/2026)
+ ![Demo](https://github.com/bobhansky/Edits_On_Lajolla/blob/main/images/diningSet_front.png)
+ ![Demo](https://github.com/bobhansky/Edits_On_Lajolla/blob/main/images/diningSet_side.png)
 
 
 # Demo Images
@@ -22,6 +22,7 @@ with Normal Mapping:
 
  ## BSSRDF
  ![Demo](https://github.com/bobhansky/DisneyBSDF_VolumetricPath_Lajolla/blob/main/images/bssrdf_knight.png)
+ ![Demo](https://github.com/bobhansky/Edits_On_Lajolla/blob/main/images/jadeBuddha.png)
 # Build
 All the dependencies are included. Use CMake to build.
 If you are on Unix systems, try
