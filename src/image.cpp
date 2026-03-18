@@ -45,6 +45,7 @@ Image1 imread1(const fs::path &filename) {
 #endif
         img = Image1(w, h);
         if (data == nullptr) {
+            std::cout << std::string("Failure when loading image: ") + filename.string() << std::endl;
             Error(std::string("Failure when loading image: ") + filename.string());
         }
         for (int i = 0; i < w * h; i++) {

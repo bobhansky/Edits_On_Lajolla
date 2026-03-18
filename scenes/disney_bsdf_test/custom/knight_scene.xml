@@ -2,7 +2,7 @@
 
 <!-- Defaults, these can be set via the command line: -Darg=value -->
 
-	<default name="spp" value="1024"/>
+	<default name="spp" value="128"/>
 	<default name="resx" value="2185"/>
 	<default name="resy" value="1638"/>
 
@@ -57,10 +57,41 @@
 		</bsdf>
 	</bsdf>
 
+	<bsdf type="twosided" id="mat-floor" name="mat-floor">
+
+		<bsdf type="principled" name="bsdf">
+			<texture type="bitmap" name="base_color">
+				<string name="filename" value="textures/pavement_base.jpg"/>
+			</texture>
+			<texture type="bitmap" name="normalMap">
+				<string name="filename" value="textures/pavement_normal.jpg"/>
+			</texture>
+
+
+			<float name="spec_tint" value="1.0"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="0.0"/>
+			<float name="anisotropic" value="0.000000"/>
+			<texture type="bitmap" name="roughness">
+				<string name="filename" value="textures/pavement_roughness.jpg"/>
+			</texture> 
+			
+
+			<float name="sheen" value="0.000000"/>
+			<float name="sheen_tint" value="1.000000"/>
+			<float name="clearcoat" value="0.104663"/>
+			<float name="clearcoat_gloss" value="0.11604"/>
+			<float name="specular" value="0.200000"/>
+		</bsdf>
+	</bsdf>
+
 	<bsdf type="twosided" id="mat-chainmail" name="mat-chainmail">
 		<bsdf type="principled" name="bsdf">
 			<texture type="bitmap" name="base_color">
 				<string name="filename" value="textures/armor_chainmail_BaseColor.png"/>
+			</texture>
+			<texture type="bitmap" name="normalMap">
+				<string name="filename" value="textures/armor_chainmail_Normal.png"/>
 			</texture>
 			<float name="spec_tint" value="1.0"/>
 			<float name="spec_trans" value="0.000000"/>
@@ -77,12 +108,15 @@
 			<float name="clearcoat_gloss" value="0.000900"/>
 			<float name="specular" value="0.001000"/>
 		</bsdf>
-	</bsdf>
+	</bsdf> 
 
 	<bsdf type="twosided" id="mat-leather" name="mat-leather">
 		<bsdf type="principled" name="bsdf">
 			<texture type="bitmap" name="base_color">
 				<string name="filename" value="textures/armor_leather_BaseColor.png"/>
+			</texture>
+			<texture type="bitmap" name="normalMap">
+				<string name="filename" value="textures/armor_leather_Normal.png"/>
 			</texture>
 			<float name="spec_tint" value="1.0"/>
 			<float name="spec_trans" value="0.000000"/>
@@ -99,12 +133,15 @@
 			<float name="clearcoat_gloss" value="0.000900"/>
 			<float name="specular" value="0.001000"/>
 		</bsdf>
-	</bsdf>
+	</bsdf> 
 
 	<bsdf type="twosided" id="mat-platemail" name="mat-platemail">
 		<bsdf type="principled" name="bsdf">
 			<texture type="bitmap" name="base_color">
 				<string name="filename" value="textures/armor_Platemail_BaseColor.png"/>
+			</texture>
+			<texture type="bitmap" name="normalMap">
+				<string name="filename" value="textures/armor_Platemail_Normal.png"/>
 			</texture>
 			<float name="spec_tint" value="1.0"/>
 			<float name="spec_trans" value="0.000000"/>
@@ -121,7 +158,7 @@
 			<float name="clearcoat_gloss" value="0.000900"/>
 			<float name="specular" value="0.001000"/>
 		</bsdf>
-	</bsdf>
+	</bsdf> 
 
 
 
@@ -131,32 +168,32 @@
 
 <!-- Shapes -->
 	<shape type="obj" id="elm__4" name="elm__4">
-		<string name="filename" value="meshes/plane.obj"/>
+		<string name="filename" value="meshes/pavement.obj"/>
 		<boolean name="face_normals" value="true"/>
-		<ref id="mat-Material.001" name="bsdf"/>
-	</shape>
+		<ref id="mat-floor" name="bsdf" />
+	</shape> 
 	<shape type="obj" id="elm__6" name="elm__6">
 		<string name="filename" value="meshes/chainmail.obj"/>
 		
 		<ref id="mat-chainmail" name="bsdf"/>
-	</shape>
+	</shape> 
 	<shape type="obj" id="elm__7" name="elm__7">
 		<string name="filename" value="meshes/leather.obj"/>
 		
 		<ref id="mat-leather" name="bsdf"/>
-	</shape>
+	</shape> 
 	<shape type="obj" id="elm__8" name="elm__8">
 		<string name="filename" value="meshes/platemail.obj"/>
 		
 		<ref id="mat-platemail" name="bsdf"/>
-	</shape>
+	</shape> 
 	
 <!-- Volumes -->
 
 <emitter type="envmap" id="Area_002-light">
 		<string name="filename" value="../../matpreview/cayley_interior_1k.hdr"/>
 		<transform name="toWorld">
-			<rotate y="1" angle="90"/>
+			<rotate y="1" angle="170"/>
 			
 		</transform>
 		<float name="scale" value="1"/>

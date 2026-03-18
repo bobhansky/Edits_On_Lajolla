@@ -5,6 +5,8 @@
 
 #include "bssrdf.h"
 
+#define MIN_PDF 0.0001f
+
 /// Unidirectional path tracing
 Spectrum path_tracing(const Scene &scene,
                       int x, int y, /* pixel coordinates */
@@ -275,6 +277,11 @@ Spectrum path_tracing(const Scene &scene,
 
                     w1 = (p1 * p1) / (p1 * p1 + p2 * p2);
                     C1 /= p1;
+
+                    // hack for stable result   biased
+                    if (p2 < MIN_PDF) {
+                        w1 = 1;
+                    }
                 }
             }
             radiance += current_path_throughput * C1 * w1;
@@ -334,6 +341,11 @@ Spectrum path_tracing(const Scene &scene,
             p2 *= G;
             // note that G cancels out in the division f/p, but we still need
             // G later for the calculation of w2.
+
+            // hack for stable result  biased
+            if (p2 < MIN_PDF) {
+                break;
+            }
 
             // Now we want to check whether dir_bsdf hit a light source, and
             // account for the light contribution (C2 & w2 & p2).

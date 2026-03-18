@@ -1,0 +1,13 @@
+# Blender 4.0.2 MTL File: 'uploads_files_4985387_[Free]+Dining+Set+Scandinavian+Style.blend'
+# www.blender.org
+
+newmtl FRAME_01_Mat
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/10727/OneDrive/桌面/textures/FRAME_01_Mat_Base_color.jpg
+map_Ns C:/Users/10727/OneDrive/桌面/dining_set/textures/FRAME_01_Mat_Roughness.jpg.tga
+map_Bump -bm 1.000000 C:/Users/10727/OneDrive/桌面/textures/FRAME_01_Mat_Normal_OpenGL.jpg

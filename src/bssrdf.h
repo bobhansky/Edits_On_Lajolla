@@ -11,5 +11,4 @@
 #define BSSRDF_MULTI 1
 #define BSSRDF_SPEC 1
 
-
 Spectrum L_bssrdf(const Scene& scene, const PathVertex& vertex, const BSSRDF& bssrdf, const Vector3& wo, pcg32_state& rng);

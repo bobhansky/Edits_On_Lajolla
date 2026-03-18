@@ -1,0 +1,452 @@
+<scene version="2.1.0">
+
+<!-- Defaults, these can be set via the command line: -Darg=value -->
+
+	<default name="spp" value="1024"/>
+	<default name="resx" value="2048"/>
+	<default name="resy" value="2048"/>
+
+<!-- Camera and Rendering Parameters -->
+
+	<integrator type="path" id="elm__0" name="elm__0">
+		<integer name="max_depth" value="6"/>
+	</integrator>
+	
+	<!--   Front cam -->
+	 <sensor type="perspective" id="elm__1" name="elm__1">
+		<string name="fov_axis" value="x"/>
+		<float name="fov" value="22.619865"/>
+		<float name="principal_point_offset_x" value="0.000000"/>
+		<float name="principal_point_offset_y" value="-0.000000"/>
+		<float name="near_clip" value="0.100000"/>
+		<float name="far_clip" value="1000.000000"/>
+		<transform name="to_world">
+			<rotate x="1" angle="1.8193950552567315"/>
+			<rotate y="1" angle="89.98003103134505"/>
+			<rotate z="1" angle="-1.8193950552567315"/>
+			<translate value="-7.898036 1.810337 0.000000"/>
+		</transform>
+		<sampler type="independent" name="sampler">
+			<integer name="sample_count" value="$spp"/>
+		</sampler>
+		<film type="hdrfilm" name="film">
+			<integer name="width" value="$resx"/>
+			<integer name="height" value="$resy"/>
+		</film>
+	</sensor> 
+
+
+	<!--<sensor type="perspective" id="elm__1" name="elm__1">
+		<string name="fov_axis" value="x"/>
+		<float name="fov" value="22.619865"/>
+		<float name="principal_point_offset_x" value="0.000000"/>
+		<float name="principal_point_offset_y" value="-0.000000"/>
+		<float name="near_clip" value="0.100000"/>
+		<float name="far_clip" value="1000.000000"/>
+		<transform name="to_world">
+			<rotate x="1" angle="3.1534586393203363"/>
+			<rotate y="1" angle="76.84122642690923"/>
+			<rotate z="1" angle="4.4307583627667124e-05"/>
+			<translate value="-2.374074 1.126393 -0.288002"/>
+		</transform>
+		<sampler type="independent" name="sampler">
+			<integer name="sample_count" value="$spp"/>
+		</sampler>
+		<film type="hdrfilm" name="film">
+			<integer name="width" value="$resx"/>
+			<integer name="height" value="$resy"/>
+		</film>
+	</sensor>-->
+
+	<!--<sensor type="perspective" id="elm__1" name="elm__1">
+		<string name="fov_axis" value="x"/>
+		<float name="fov" value="22.619865"/>
+		<float name="principal_point_offset_x" value="0.000000"/>
+		<float name="principal_point_offset_y" value="-0.000000"/>
+		<float name="near_clip" value="0.100000"/>
+		<float name="far_clip" value="1000.000000"/>
+		<transform name="to_world">
+			<rotate x="1" angle="7.253617356097583"/>
+			<rotate y="1" angle="44.43823868357305"/>
+			<rotate z="1" angle="-5.395827301542825e-07"/>
+			<translate value="-1.252488 1.229989 -1.775379"/>
+		</transform>
+		<sampler type="independent" name="sampler">
+			<integer name="sample_count" value="$spp"/>
+		</sampler>
+		<film type="hdrfilm" name="film">
+			<integer name="width" value="$resx"/>
+			<integer name="height" value="$resy"/>
+		</film>
+	</sensor> -->
+
+<!-- Materials -->
+	<bsdf type="twosided" id="mat-acc_chair" name="mat-acc_chair">
+		<bsdf type="principled" name="bsdf">
+			<texture type="bitmap" name="base_color">
+				<string name="filename" value="textures/AAC_CHAIR_Mat_Base_color.jpg"/>
+			</texture>
+			<float name="spec_tint" value="1.0"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="0.0"/>
+			<float name="anisotropic" value="0.000000"/>
+			<texture type="bitmap" name="roughness">
+				<string name="filename" value="textures/AAC_CHAIR_Mat_Roughness.jpg"/>
+			</texture>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheen_tint" value="1.000000"/>
+			<float name="clearcoat" value="0.704663"/>
+			<float name="clearcoat_gloss" value="0.11604"/>
+			<float name="specular" value="0.500000"/>
+		</bsdf>
+	</bsdf>
+
+
+	<bsdf type="twosided" id="mat-buddha" name="mat-buddha_name">
+		<bsdf type="bssrdf">
+			<rgb name="baseColor" value="0.5 0.5 0.5"/>
+			<rgb name="sigma_a" value="1.4 0.001 1.7"/>
+			<rgb name="sigma_s" value="0.5 1 0.5"/>     
+			<float name = "anisotropy" value = "0.1" />
+			<float name = "eta" value = "1.62" />
+		</bsdf>
+		
+		<!--<bsdf type="bssrdf">
+			<rgb name="baseColor" value="0.5 0.5 0.5"/>
+			<rgb name="sigma_a" value="0.8 0.2 1.4"/>
+			<rgb name="sigma_s" value="0.4 1 0.4"/>     
+			<float name = "anisotropy" value = "0.2" />
+			<float name = "eta" value = "1.62" />
+		</bsdf> -->
+	</bsdf>
+
+	<bsdf type="twosided" id="mat-floor" name="mat-FLOOR_N">
+		<bsdf type="principled" name="bsdf">
+			<texture type="bitmap" name="base_color">
+				<string name="filename" value="textures/AQ_WoodenFloor_BaseColor.jpg"/>
+			</texture>
+			<float name="spec_tint" value="1.0"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="0.0"/>
+			<float name="anisotropic" value="0.000000"/>
+			<texture type="bitmap" name="roughness">
+				<string name="filename" value="textures/AQ_WoodenFloor_ROUGHNESS_2k.jpg"/>
+			</texture>
+			<texture type="bitmap" name="normalMap">
+				<string name="filename" value="textures/AQ_WoodenFloor_NORMAL_2k.jpg"/>
+			</texture>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheen_tint" value="1.000000"/>
+			<float name="clearcoat" value="0.704663"/>
+			<float name="clearcoat_gloss" value="0.6604"/>
+			<float name="specular" value="0.500000"/>
+		</bsdf>
+	</bsdf>
+
+	<bsdf type="twosided" id="mat-frame1" name="mat-frame_1">
+		<bsdf type="principled" name="bsdf">
+			<texture type="bitmap" name="base_color">
+				<string name="filename" value="textures/FRAME_01_Mat_Base_color.jpg"/>
+			</texture>
+			<float name="spec_tint" value="1.0"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="0.0"/>
+			<float name="anisotropic" value="0.000000"/>
+			<texture type="bitmap" name="roughness">
+				<string name="filename" value="textures/FRAME_01_Mat_Roughness.jpg"/>
+			</texture> 
+			<texture type="bitmap" name="normalMap">
+				<string name="filename" value="textures/FRAME_01_Mat_Normal_OpenGL.jpg"/>
+			</texture>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheen_tint" value="1.000000"/>
+			<float name="clearcoat" value="0.704663"/>
+			<float name="clearcoat_gloss" value="0.6604"/>
+			<float name="specular" value="0.500000"/>
+		</bsdf>
+	</bsdf>
+
+	<bsdf type="twosided" id="mat-frame2" name="mat-frame_2">
+		<bsdf type="principled" name="bsdf">
+			<texture type="bitmap" name="base_color">
+				<string name="filename" value="textures/FRAME_02_Mat_Base_color.jpg"/>
+			</texture>
+			<float name="spec_tint" value="1.0"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="0.0"/>
+			<float name="anisotropic" value="0.000000"/>
+			<texture type="bitmap" name="roughness">
+				<string name="filename" value="textures/FRAME_02_Mat_Roughness.jpg"/>
+			</texture>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheen_tint" value="1.000000"/>
+			<float name="clearcoat" value="0.704663"/>
+			<float name="clearcoat_gloss" value="0.6604"/>
+			<float name="specular" value="0.500000"/>
+		</bsdf>
+	</bsdf>
+
+	<!--<bsdf type="twosided" id="mat-lamp" name="mat-lamp">
+		<bsdf type="principled" name="bsdf">
+			<texture type="bitmap" name="base_color">
+				<string name="filename" value="textures/LAMP_PINK_mat_Base_Color.jpg"/>
+			</texture>
+			<float name="spec_tint" value="1.0"/>
+			<float name="spec_trans" value="0.000000"/>
+			<texture type="bitmap" name="roughness">
+				<string name="filename" value="textures/LAMP_PINK_mat_Roughness.jpg"/>
+			</texture>
+			<texture type="bitmap" name="metallic">
+				<string name="filename" value="textures/LAMP_PINK_mat_Metallic.jpg"/>
+			</texture>
+			<texture type="bitmap" name="normalMap">
+				<string name="filename" value="textures/LAMP_PINK_mat_Normal_OpenGL.jpg"/>
+			</texture>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheen_tint" value="1.000000"/>
+			<float name="clearcoat" value="0.704663"/>
+			<float name="clearcoat_gloss" value="0.6604"/>
+			<float name="specular" value="0.800000"/>
+		</bsdf>
+	</bsdf> -->
+
+	<bsdf type="twosided" id="mat-pendant" name="mat-pendant">
+		<bsdf type="principled" name="bsdf">
+			<texture type="bitmap" name="base_color">
+				<string name="filename" value="textures/LIGHT_PENDANT_Mat_Base_color.jpg"/>
+			</texture>
+			<float name="spec_tint" value="1.0"/>
+			<float name="spec_trans" value="0.000000"/>
+			<texture type="bitmap" name="roughness">
+				<string name="filename" value="textures/LIGHT_PENDANT_Mat_Roughness.jpg"/>
+			</texture>
+			<texture type="bitmap" name="metallic">
+				<string name="filename" value="textures/LIGHT_PENDANT_Mat_Metallic.jpg"/>
+			</texture>
+			<texture type="bitmap" name="normalMap">
+				<string name="filename" value="textures/LIGHT_PENDANT_Mat_Normal_OpenGL.jpg"/>
+			</texture>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheen_tint" value="1.000000"/>
+			<float name="clearcoat" value="0.704663"/>
+			<float name="clearcoat_gloss" value="0.6604"/>
+			<float name="specular" value="0.500000"/>
+		</bsdf>
+	</bsdf>
+
+	<bsdf type="twosided" id="mat-plate" name="mat-plate">
+		<bsdf type="principled" name="bsdf">
+			<texture type="bitmap" name="base_color">
+				<string name="filename" value="textures/PLATES_Mat_Base_Color.jpg"/>
+			</texture>
+			<float name="spec_tint" value="1.0"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="0.0"/>
+			<texture type="bitmap" name="roughness">
+				<string name="filename" value="textures/PLATES_Mat_Roughness.jpg"/>
+			</texture>
+			<texture type="bitmap" name="normalMap">
+				<string name="filename" value="textures/PLATES_Mat_Normal_OpenGL.jpg"/>
+			</texture>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheen_tint" value="1.000000"/>
+			<float name="clearcoat" value="0.704663"/>
+			<float name="clearcoat_gloss" value="0.6604"/>
+			<float name="specular" value="0.500000"/>
+		</bsdf>
+	</bsdf>
+
+	<bsdf type="twosided" id="mat-sideboard" name="mat-sideboard">
+		<bsdf type="principled" name="bsdf">
+			<texture type="bitmap" name="base_color">
+				<string name="filename" value="textures/SIDEBOARD_Mat_Base_color.jpg"/>
+			</texture>
+			<float name="spec_tint" value="1.0"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="0.0"/>
+			<texture type="bitmap" name="roughness">
+				<string name="filename" value="textures/SIDEBOARD_Mat_Roughness.jpg"/>
+			</texture>
+			<texture type="bitmap" name="normalMap">
+				<string name="filename" value="textures/SIDEBOARD_Mat_Normal_OpenGL.jpg"/>
+			</texture>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheen_tint" value="1.000000"/>
+			<float name="clearcoat" value="0.704663"/>
+			<float name="clearcoat_gloss" value="0.6604"/>
+			<float name="specular" value="0.500000"/>
+		</bsdf>
+	</bsdf>
+
+	<bsdf type="twosided" id="mat-table" name="mat-table">
+		<bsdf type="principled" name="bsdf">
+			<texture type="bitmap" name="base_color">
+				<string name="filename" value="textures/TABLE_WOOD_Base_color.jpg"/>
+			</texture>
+			<float name="spec_tint" value="1.0"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="0.0"/>
+			<texture type="bitmap" name="roughness">
+				<string name="filename" value="textures/TABLE_WOOD_Roughness.jpg"/>
+			</texture>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheen_tint" value="1.000000"/>
+			<float name="clearcoat" value="0.704663"/>
+			<float name="clearcoat_gloss" value="0.6604"/>
+			<float name="specular" value="0.500000"/>
+		</bsdf>
+	</bsdf>
+
+	<bsdf type="twosided" id="mat-wall" name="mat-wall">
+		<bsdf type="principled" name="bsdf">
+			<rgb value="0.082 0.098 0.098" name="base_color"/>
+
+			<float name="spec_tint" value="1.0"/>
+			<float name="spec_trans" value="0.500000"/>
+			<float name="metallic" value="0.0"/>
+			<texture type="bitmap" name="roughness">
+				<string name="filename" value="textures/AQ_CONCRETE_Roughness_.jpg"/>
+			</texture>
+			<texture type="bitmap" name="normalMap">
+				<string name="filename" value="textures/AQ_CONCRETE_NORMAL_.jpg"/>
+			</texture>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheen_tint" value="1.000000"/>
+			<float name="clearcoat" value="0.704663"/>
+			<float name="clearcoat_gloss" value="0.6604"/>
+			<float name="specular" value="0.500000"/>
+		</bsdf>
+	</bsdf>
+
+<!-- Emitters -->
+
+	<emitter type="envmap" id="Area_002-light">
+		<string name="filename" value="../matpreview/cayley_interior_1k.hdr"/>
+		<transform name="toWorld">
+			<rotate y="1" angle="100"/>
+			
+		</transform>
+		<float name="scale" value="0.2"/>
+	</emitter> 
+
+	<shape type="obj" id="areaLight" name="areaLight">
+		<string name="filename" value="meshes/aLight.obj"/>
+		<boolean name="face_normals" value="true"/>
+		
+		<emitter type="area">
+			<rgb name="radiance" value="22 22 22"/>
+		</emitter>
+
+		<bsdf type="diffuse">
+			<rgb name="reflectance" value="0,0,0"/>
+		</bsdf>
+	</shape> 
+
+	<!--<shape type="obj" id="areaLightSmall" name="areaLightSmall">
+		<string name="filename" value="meshes/aLightS.obj"/>
+		<boolean name="face_normals" value="true"/>
+		
+		<emitter type="area">
+			<rgb name="radiance" value="4 4 4"/>
+		</emitter>
+
+		<bsdf type="diffuse">
+			<rgb name="reflectance" value="0,0,0"/>
+		</bsdf>
+	</shape>  -->
+
+
+
+<!-- Shapes -->
+	<shape type="obj" id="chair" name="chair">
+		<string name="filename" value="meshes/ACC_CHAIR.obj"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="mat-acc_chair" name="bsdf" />
+	</shape> 
+	<shape type="obj" id="chair1" name="chair1">
+		<string name="filename" value="meshes/ACC_CHAIR_01.obj"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="mat-acc_chair" name="bsdf" />
+	</shape> 
+	<shape type="obj" id="chair2" name="chair2">
+		<string name="filename" value="meshes/ACC_CHAIR_02.obj"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="mat-acc_chair" name="bsdf" />
+	</shape> 
+
+	<shape type="obj" id="buddha" name="buddha">
+		<string name="filename" value="meshes/buddha2.obj"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="mat-buddha" name="bsdf" />
+	</shape> 
+
+	<shape type="obj" id="floor" name="floor">
+		<string name="filename" value="meshes/floor.obj"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="mat-floor" name="bsdf" />
+	</shape> 
+
+	<shape type="obj" id="frame1" name="frame1">
+		<string name="filename" value="meshes/frame1.obj"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="mat-frame1" name="bsdf" />
+	</shape> 
+
+	<shape type="obj" id="frame2" name="frame2">
+		<string name="filename" value="meshes/frame2.obj"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="mat-frame2" name="bsdf" />
+	</shape> 
+
+	<!--<shape type="obj" id="lamp" name="lamp">
+		<string name="filename" value="meshes/lamp.obj"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="mat-lamp" name="bsdf" />
+	</shape> -->
+
+	<shape type="obj" id="pendant" name="pendant">
+		<string name="filename" value="meshes/pendant.obj"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="mat-pendant" name="bsdf" />
+
+		
+		<!--<transform name="toWorld">
+			<translate y="0.2"/>
+			
+		</transform> -->
+
+	</shape> 
+
+	<shape type="obj" id="plate" name="plate">
+		<string name="filename" value="meshes/plate.obj"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="mat-plate" name="bsdf" />
+	</shape> 
+
+	<shape type="obj" id="sideboard" name="sideboard">
+		<string name="filename" value="meshes/sideboard.obj"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="mat-sideboard" name="bsdf" />
+	</shape> 
+
+	<shape type="obj" id="table" name="table">
+		<string name="filename" value="meshes/table.obj"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="mat-table" name="bsdf" />
+	</shape> 
+
+	<shape type="obj" id="wall" name="wall">
+		<string name="filename" value="meshes/wall.obj"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="mat-wall" name="bsdf" />
+	</shape> 
+
+<!-- Volumes -->
+
+</scene>

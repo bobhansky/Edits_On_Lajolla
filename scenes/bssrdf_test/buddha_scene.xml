@@ -1,0 +1,97 @@
+<scene version="2.1.0">
+
+<!-- Defaults, these can be set via the command line: -Darg=value -->
+
+	<default name="spp" value="128"/>
+	<default name="resx" value="1600"/>
+	<default name="resy" value="900"/>
+
+<!-- Camera and Rendering Parameters -->
+
+
+		<integrator type="path" id="elm__0" name="elm__0">
+		<integer name="max_depth" value="12"/>
+	</integrator>
+	<sensor type="perspective" id="elm__1" name="elm__1">
+		<string name="fov_axis" value="x"/>
+		<float name="fov" value="39.597755"/>
+		<float name="principal_point_offset_x" value="0.000000"/>
+		<float name="principal_point_offset_y" value="-0.000000"/>
+		<float name="near_clip" value="0.100000"/>
+		<float name="far_clip" value="100.000000"/>
+		<transform name="to_world">
+			<rotate x="1" angle="179.999991348578"/>
+			<rotate y="1" angle="5.008956130975331e-06"/>
+			<rotate z="1" angle="180.00000500895632"/>
+			<translate value="-0.005198 1.0 9.320371"/>
+		</transform>
+		<sampler type="independent" name="sampler">
+			<integer name="sample_count" value="$spp"/>
+		</sampler>
+		<film type="hdrfilm" name="film">
+			<integer name="width" value="$resx"/>
+			<integer name="height" value="$resy"/>
+		</film>
+	</sensor>
+
+
+<!-- Materials -->
+
+	<bsdf type="twosided" id="mat-Material.001" name="mat-Material.001">
+		<bsdf type="principled" name="bsdf">
+			<rgb value="0.632209 0.600940 0.313522" name="base_color"/>
+			<float name="spec_tint" value="1.0"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="0.0"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="roughness" value="0.276"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheen_tint" value="1.000000"/>
+			<float name="clearcoat" value="0.704663"/>
+			<float name="clearcoat_gloss" value="0.11604"/>
+			<float name="specular" value="0.500000"/>
+		</bsdf>
+	</bsdf>
+
+	<bsdf type="twosided" id="mat-buddha" name="mat-buddha_name">
+		<bsdf type="bssrdf">
+			<rgb name="baseColor" value="0.5 0.5 0.5"/>
+			<rgb name="sigma_a" value="1.71 0.98 1.71"/>
+			<rgb name="sigma_s" value="0.05 1.6 0.5"/>     
+			<float name = "anisotropy" value = "0" />
+			<float name = "eta" value = "1.62" />
+		</bsdf>
+	</bsdf>
+
+	
+	<bsdf type="diffuse" id="light">
+		<spectrum name="reflectance" value="400:0.78, 500:0.78, 600:0.78, 700:0.78"/>
+	</bsdf>
+
+
+
+<!-- Emitters -->
+
+
+
+<!-- Shapes -->
+	<shape type="obj" id="elm__4" name="elm__4">
+		<string name="filename" value="meshes/buddha/buddha_40w.obj"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="mat-buddha" name="bsdf"/>
+	</shape> 
+
+	
+<!-- Volumes -->
+
+<emitter type="envmap" id="Area_002-light">
+		<string name="filename" value="../matpreview/cayley_interior_1k.hdr"/>
+		<transform name="toWorld">
+			<rotate y="1" angle="130"/>
+			
+		</transform>
+		<float name="scale" value="1"/>
+</emitter>
+
+
+</scene>

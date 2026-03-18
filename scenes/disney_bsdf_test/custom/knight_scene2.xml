@@ -2,7 +2,7 @@
 
 <!-- Defaults, these can be set via the command line: -Darg=value -->
 
-	<default name="spp" value="512"/>
+	<default name="spp" value="128"/>
 	<default name="resx" value="2185"/>
 	<default name="resy" value="1638"/>
 
@@ -58,6 +58,9 @@
 			<texture type="bitmap" name="base_color">
 				<string name="filename" value="textures/armor_chainmail_BaseColor.png"/>
 			</texture>
+			<texture type="bitmap" name="normalMap">
+				<string name="filename" value="textures/armor_chainmail_Normal.png"/>
+			</texture>
 			<float name="spec_tint" value="1.0"/>
 			<float name="spec_trans" value="0.000000"/>
 			<texture type="bitmap" name="metallic">
@@ -80,6 +83,9 @@
 			<texture type="bitmap" name="base_color">
 				<string name="filename" value="textures/armor_leather_BaseColor.png"/>
 			</texture>
+			<texture type="bitmap" name="normalMap">
+				<string name="filename" value="textures/armor_leather_Normal.png"/>
+			</texture>
 			<float name="spec_tint" value="1.0"/>
 			<float name="spec_trans" value="0.000000"/>
 			<texture type="bitmap" name="metallic">
@@ -101,6 +107,9 @@
 		<bsdf type="principled" name="bsdf">
 			<texture type="bitmap" name="base_color">
 				<string name="filename" value="textures/armor_Platemail_BaseColor.png"/>
+			</texture>
+			<texture type="bitmap" name="normalMap">
+				<string name="filename" value="textures/armor_Platemail_Normal.png"/>
 			</texture>
 			<float name="spec_tint" value="1.0"/>
 			<float name="spec_trans" value="0.000000"/>
