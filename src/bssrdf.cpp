@@ -181,20 +181,20 @@ std::tuple<BSSRDFSampleAxis, Ray, Real> sampleProbeRay(const PathVertex& vertex,
 	if (rnd_u_axis <= 0.5) {
 		point = vertex.position + to_world(vertex.shading_frame, Vector3{ p_sample.x, p_sample.y, -len_3rd });
 		axis = NAxis;
-		dir = vertex.geometric_normal;  // dir along normal
+		dir = vertex.shading_frame.n;  // dir along normal
 		pdf *= 0.5;
 	}
 	// 25% sample U axis
 	else if (rnd_u_axis <= 0.75) {
 		point = vertex.position + to_world(vertex.shading_frame, Vector3{ -len_3rd, p_sample.x, p_sample.y });
-		dir = vertex.geometric_normal;  // dir along U axis
+		dir = vertex.shading_frame.x;  // dir along U axis
 		axis = UAxis;
 		pdf *= 0.25;
 	}
 	// 25% sample V axis
 	else {
 		point = vertex.position + to_world(vertex.shading_frame, Vector3{ p_sample.x, -len_3rd, p_sample.y });
-		dir = vertex.geometric_normal;  // dir along V axis
+		dir = vertex.shading_frame.y;  // dir along V axis
 		axis = VAxis;
 		pdf *= 0.25;
 	}
