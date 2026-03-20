@@ -117,8 +117,8 @@ Spectrum path_tracing(const Scene &scene,
 #endif
 
             // specular term for asthetics 
-            Real F_reflect = fresnel_dielectric(abs(dot(vertex.geometric_normal, wo)), bssrdf.eta_);
-            Vector3 dir = normalize( 2 * dot(vertex.geometric_normal, wo) * vertex.geometric_normal - wo);
+            Real F_reflect = fresnel_dielectric(abs(dot(vertex.shading_frame.n, wo)), bssrdf.eta_);
+            Vector3 dir = normalize( 2 * dot(vertex.shading_frame.n, wo) * vertex.shading_frame.n - wo);
             
             current_path_throughput *= F_reflect;
             ray.dir = dir;
@@ -145,9 +145,9 @@ Spectrum path_tracing(const Scene &scene,
             if (!specular_vertex)
                 break;
             // if specular ray hit bssrdf obj, break here for speeding up.  So it is a biased estimator
-            if (std::holds_alternative<BSSRDF>(scene.materials[specular_vertex.value().material_id])) {
-                break;
-            }
+            //if (std::holds_alternative<BSSRDF>(scene.materials[specular_vertex.value().material_id])) {
+            //    break;
+            //}
             
 
             vertex = *specular_vertex;

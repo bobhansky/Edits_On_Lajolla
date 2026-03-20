@@ -50,7 +50,7 @@ Vector2 gaussSample2d(const Vector2& rnd_param_uv, Real falloff) {
 
 // with integral upper bound = Rmax
 Vector2 gaussSample2d(const Vector2& rnd_param_uv, Real falloff, Real Rmax) {
-	float r = log(1 - rnd_param_uv[0] * (1 - exp(-falloff * Rmax * Rmax)) / (-falloff));
+	float r = log(1 - rnd_param_uv[0] * (1 - exp(-falloff * Rmax * Rmax))) / (-falloff);
 	r = sqrt(r);
 
 	float theta = 2 * c_PI * rnd_param_uv[1];
@@ -71,7 +71,7 @@ Real gaussianSample2dPdf(const Vector3& pCenter, const Vector3& pSample, const V
 }
 
 Real gaussianSample2dPdf(Vector2 sample, Real falloff, Real Rmax) {
-	Real deno = 1 / c_PI * falloff * exp(-falloff * sample.x * sample.x + sample.y * sample.y);
+	Real deno = 1 / c_PI * falloff * exp(-falloff * (sample.x * sample.x + sample.y * sample.y));
 	return deno / (1.0f - exp(-falloff * Rmax * Rmax));
 }
 
@@ -258,7 +258,7 @@ Real MISWeight(const PathVertex& vertex, const Vector3& pIn, const Vector3& nIn,
 */
 Spectrum L_single(const Scene& scene, const PathVertex& vertex, const BSSRDF& bssrdf, const Vector3& wo, pcg32_state& rng) {
 	Vector3 pVertex = vertex.position;
-	Vector3 nVertex = vertex.geometric_normal;
+	Vector3 nVertex = vertex.shading_frame.n;
 	Real cos_out = abs(dot(wo, nVertex));
 	
 	Real eta = bssrdf.eta_;	// inter_eta / world_eta
@@ -310,7 +310,7 @@ Spectrum L_single(const Scene& scene, const PathVertex& vertex, const BSSRDF& bs
 
 			// update shadow ray from p_wi
 			Vector3 p_wi = inter_vertex.position;
-			Vector3 ni = inter_vertex.geometric_normal;
+			Vector3 ni = inter_vertex.shading_frame.n;
 
 			Real distanceLeft = infinity<Real>();
 			shadow_ray.org = p_wi;
@@ -357,7 +357,7 @@ Spectrum L_single(const Scene& scene, const PathVertex& vertex, const BSSRDF& bs
 
 			// update shadow ray from p_wi
 			Vector3 p_wi = inter_vertex.position;
-			Vector3 ni = inter_vertex.geometric_normal;
+			Vector3 ni = inter_vertex.shading_frame.n;
 			
 			Real distanceLeft = distance(point_on_light.position, p_wi);
 			shadow_ray.org = p_wi;
@@ -390,7 +390,7 @@ Spectrum L_single(const Scene& scene, const PathVertex& vertex, const BSSRDF& bs
 
 Spectrum L_diffusion(const Scene& scene, const PathVertex& vertex, const BSSRDF& bssrdf, const Vector3& wo, pcg32_state& rng) {
 	Real Rmax = bssrdf.Rmax_;
-	Real cos_out = abs(dot(wo, vertex.geometric_normal));
+	Real cos_out = abs(dot(wo, vertex.shading_frame.n));
 	Real F_trans = 1 - fresnel_dielectric(cos_out, bssrdf.eta_);
 
 	// luminance == scalar proxy
@@ -450,7 +450,7 @@ Spectrum L_diffusion(const Scene& scene, const PathVertex& vertex, const BSSRDF&
 			continue;
 		}
 
-		Vector3 ni = probVertex.geometric_normal;
+		Vector3 ni = probVertex.shading_frame.n;
 		Real cos_in = abs(dot(ni, dir_light));
 		Real cos_theta_prime = abs(dot(-dir_light, point_on_light.normal));
 		Real Geo;
@@ -466,8 +466,8 @@ Spectrum L_diffusion(const Scene& scene, const PathVertex& vertex, const BSSRDF&
 		Real F_ti = 1 - fresnel_dielectric(cos_in, bssrdf.eta_);
 
 		// MIS for axis samplings
-		Real pdf = pdf_disk_sample * abs(dot(probRay.dir, probVertex.geometric_normal));		// surface area space
-		Real w = MISWeight(vertex, pProbVertex, probVertex.geometric_normal, spAxis, lum_sigmaTr, pdf, Rmax);
+		Real pdf = pdf_disk_sample * abs(dot(probRay.dir, probVertex.shading_frame.n));		// surface area space
+		Real w = MISWeight(vertex, pProbVertex, probVertex.shading_frame.n, spAxis, lum_sigmaTr, pdf, Rmax);
 
 		//Spectrum base_color = eval(bsdf.base_color, vertex.uv, vertex.uv_screen_size, texture_pool);
 
