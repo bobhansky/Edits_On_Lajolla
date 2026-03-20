@@ -1,10 +1,9 @@
 ## This is a UCSD CSE272 course project written on top of the lajolla basecode, implementing the Disney Principled BSDF (2012), Volumtric Path Tracing, and BSSRDF
+
+# Demo Images rendered by lajolla
  ![Demo](https://github.com/bobhansky/Edits_On_Lajolla/blob/main/images/diningSet_front.png)
  ![Demo](https://github.com/bobhansky/Edits_On_Lajolla/blob/main/images/diningSet_side.png)
 
-
-# Demo Images
-Some images rendered by lajolla.
 ## Disney BSDF
 ![Demo](https://github.com/bobhansky/DisneyBSDF/blob/main/images/disney_bsdf_array_final.png)
 ![Demo](https://github.com/bobhansky/DisneyBSDF/blob/main/images/knight_profile.png)
