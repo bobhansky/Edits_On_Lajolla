@@ -2,7 +2,7 @@
 
 <!-- Defaults, these can be set via the command line: -Darg=value -->
 
-	<default name="spp" value="128"/>
+	<default name="spp" value="4"/>
 	<default name="resx" value="1600"/>
 	<default name="resy" value="900"/>
 
@@ -10,7 +10,7 @@
 
 
 		<integrator type="path" id="elm__0" name="elm__0">
-		<integer name="max_depth" value="12"/>
+		<integer name="max_depth" value="6"/>
 	</integrator>
 	<sensor type="perspective" id="elm__1" name="elm__1">
 		<string name="fov_axis" value="x"/>
@@ -77,7 +77,6 @@
 <!-- Shapes -->
 	<shape type="obj" id="elm__4" name="elm__4">
 		<string name="filename" value="meshes/buddha/buddha_40w.obj"/>
-		<boolean name="face_normals" value="true"/>
 		<ref id="mat-buddha" name="bsdf"/>
 	</shape> 
 

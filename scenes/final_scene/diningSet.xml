@@ -13,7 +13,7 @@
 	</integrator>
 	
 	<!--   Front cam -->
-	 <sensor type="perspective" id="elm__1" name="elm__1">
+	<!-- <sensor type="perspective" id="elm__1" name="elm__1">
 		<string name="fov_axis" value="x"/>
 		<float name="fov" value="22.619865"/>
 		<float name="principal_point_offset_x" value="0.000000"/>
@@ -33,7 +33,8 @@
 			<integer name="width" value="$resx"/>
 			<integer name="height" value="$resy"/>
 		</film>
-	</sensor> 
+	</sensor>  -->
+
 
 
 	<!--<sensor type="perspective" id="elm__1" name="elm__1">
@@ -58,7 +59,7 @@
 		</film>
 	</sensor>-->
 
-	<!--<sensor type="perspective" id="elm__1" name="elm__1">
+	<sensor type="perspective" id="elm__1" name="elm__1">
 		<string name="fov_axis" value="x"/>
 		<float name="fov" value="22.619865"/>
 		<float name="principal_point_offset_x" value="0.000000"/>
@@ -78,7 +79,7 @@
 			<integer name="width" value="$resx"/>
 			<integer name="height" value="$resy"/>
 		</film>
-	</sensor> -->
+	</sensor> 
 
 <!-- Materials -->
 	<bsdf type="twosided" id="mat-acc_chair" name="mat-acc_chair">
@@ -110,14 +111,16 @@
 			<float name = "anisotropy" value = "0.1" />
 			<float name = "eta" value = "1.62" />
 		</bsdf>
-		
-		<!--<bsdf type="bssrdf">
+
+		<!-- 
+			<bsdf type="bssrdf">
 			<rgb name="baseColor" value="0.5 0.5 0.5"/>
-			<rgb name="sigma_a" value="0.8 0.2 1.4"/>
-			<rgb name="sigma_s" value="0.4 1 0.4"/>     
-			<float name = "anisotropy" value = "0.2" />
+			<rgb name="sigma_a" value="1.4 0.001 1.7"/>
+			<rgb name="sigma_s" value="0.5 1 0.5"/>     
+			<float name = "anisotropy" value = "0.1" />
 			<float name = "eta" value = "1.62" />
-		</bsdf> -->
+		</bsdf>
+		-->
 	</bsdf>
 
 	<bsdf type="twosided" id="mat-floor" name="mat-FLOOR_N">
@@ -337,7 +340,7 @@
 
 	<shape type="obj" id="areaLight" name="areaLight">
 		<string name="filename" value="meshes/aLight.obj"/>
-		<boolean name="face_normals" value="true"/>
+		<boolean name="face_normals" value="false"/>
 		
 		<emitter type="area">
 			<rgb name="radiance" value="22 22 22"/>
@@ -350,7 +353,7 @@
 
 	<!--<shape type="obj" id="areaLightSmall" name="areaLightSmall">
 		<string name="filename" value="meshes/aLightS.obj"/>
-		<boolean name="face_normals" value="true"/>
+		<boolean name="face_normals" value="false"/>
 		
 		<emitter type="area">
 			<rgb name="radiance" value="4 4 4"/>
@@ -366,53 +369,53 @@
 <!-- Shapes -->
 	<shape type="obj" id="chair" name="chair">
 		<string name="filename" value="meshes/ACC_CHAIR.obj"/>
-		<boolean name="face_normals" value="true"/>
+		<boolean name="face_normals" value="false"/>
 		<ref id="mat-acc_chair" name="bsdf" />
 	</shape> 
 	<shape type="obj" id="chair1" name="chair1">
 		<string name="filename" value="meshes/ACC_CHAIR_01.obj"/>
-		<boolean name="face_normals" value="true"/>
+		<boolean name="face_normals" value="false"/>
 		<ref id="mat-acc_chair" name="bsdf" />
 	</shape> 
 	<shape type="obj" id="chair2" name="chair2">
 		<string name="filename" value="meshes/ACC_CHAIR_02.obj"/>
-		<boolean name="face_normals" value="true"/>
+		<boolean name="face_normals" value="false"/>
 		<ref id="mat-acc_chair" name="bsdf" />
 	</shape> 
 
 	<shape type="obj" id="buddha" name="buddha">
 		<string name="filename" value="meshes/buddha2.obj"/>
-		<boolean name="face_normals" value="true"/>
+		<boolean name="face_normals" value="false"/>
 		<ref id="mat-buddha" name="bsdf" />
 	</shape> 
 
 	<shape type="obj" id="floor" name="floor">
 		<string name="filename" value="meshes/floor.obj"/>
-		<boolean name="face_normals" value="true"/>
+		<boolean name="face_normals" value="false"/>
 		<ref id="mat-floor" name="bsdf" />
 	</shape> 
 
 	<shape type="obj" id="frame1" name="frame1">
 		<string name="filename" value="meshes/frame1.obj"/>
-		<boolean name="face_normals" value="true"/>
+		<boolean name="face_normals" value="false"/>
 		<ref id="mat-frame1" name="bsdf" />
 	</shape> 
 
 	<shape type="obj" id="frame2" name="frame2">
 		<string name="filename" value="meshes/frame2.obj"/>
-		<boolean name="face_normals" value="true"/>
+		<boolean name="face_normals" value="false"/>
 		<ref id="mat-frame2" name="bsdf" />
 	</shape> 
 
 	<!--<shape type="obj" id="lamp" name="lamp">
 		<string name="filename" value="meshes/lamp.obj"/>
-		<boolean name="face_normals" value="true"/>
+		<boolean name="face_normals" value="false"/>
 		<ref id="mat-lamp" name="bsdf" />
 	</shape> -->
 
 	<shape type="obj" id="pendant" name="pendant">
 		<string name="filename" value="meshes/pendant.obj"/>
-		<boolean name="face_normals" value="true"/>
+		<boolean name="face_normals" value="false"/>
 		<ref id="mat-pendant" name="bsdf" />
 
 		
@@ -425,25 +428,25 @@
 
 	<shape type="obj" id="plate" name="plate">
 		<string name="filename" value="meshes/plate.obj"/>
-		<boolean name="face_normals" value="true"/>
+		<boolean name="face_normals" value="false"/>
 		<ref id="mat-plate" name="bsdf" />
 	</shape> 
 
 	<shape type="obj" id="sideboard" name="sideboard">
 		<string name="filename" value="meshes/sideboard.obj"/>
-		<boolean name="face_normals" value="true"/>
+		<boolean name="face_normals" value="false"/>
 		<ref id="mat-sideboard" name="bsdf" />
 	</shape> 
 
 	<shape type="obj" id="table" name="table">
 		<string name="filename" value="meshes/table.obj"/>
-		<boolean name="face_normals" value="true"/>
+		<boolean name="face_normals" value="false"/>
 		<ref id="mat-table" name="bsdf" />
 	</shape> 
 
 	<shape type="obj" id="wall" name="wall">
 		<string name="filename" value="meshes/wall.obj"/>
-		<boolean name="face_normals" value="true"/>
+		<boolean name="face_normals" value="false"/>
 		<ref id="mat-wall" name="bsdf" />
 	</shape> 
 

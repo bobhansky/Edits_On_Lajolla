@@ -107,7 +107,13 @@ BSSRDF::BSSRDF(Texture<Spectrum> base_color, Texture<Spectrum> normMap, Spectrum
 	// relative contribution compared to center is Rd(r) / Rd(0) = exp(-sigma_tr * r*r)
 	// exp(-sigma_tr * r*r) = skip ratio, solve for r: 
 	Real skip_ratio = 0.01f;  // skip points that contribute less than 1% of the center point
-	Rmax_ = sqrt(log(skip_ratio) / -sigma_tr_[0]);
+
+	Real lum_sigmaTr =
+		Real(0.2126) * sigma_tr_[0] +
+		Real(0.7152) * sigma_tr_[1] +
+		Real(0.0722) * sigma_tr_[2];
+
+	Rmax_ = sqrt(log(skip_ratio) / -lum_sigmaTr);
 }
 
 // the average diffuse Fresnel reflectance. It can be solved like this.
@@ -134,7 +140,7 @@ Spectrum BSSRDF::Rd(Real d2) const {
 	Real A = (1 + fdr) / (1 - fdr);  // accounts for Fresnel internal reflection
 
 	Spectrum zr = make_const_spectrum(1) / sigma_t_prime_;  // the distance beneath the surface to the positive dipole light
-	Spectrum zv = zr * (make_const_spectrum(4) * A * D_);   // the distance above the surface to the negative dipole light
+	Spectrum zv = zr + (make_const_spectrum(4) * A * D_);   // the distance above the surface to the negative dipole light
 
 	Spectrum dr = sqrt(d2 + zr * zr);
 	Spectrum dv = sqrt(d2 + zv * zv);
@@ -158,6 +164,7 @@ Spectrum BSSRDF::Rd(Real d2) const {
 std::tuple<BSSRDFSampleAxis, Ray, Real> sampleProbeRay(const PathVertex& vertex, pcg32_state& rng, Real sigmaTr, Real Rmax, const Scene& scene) {
 	Vector2 rnd_uv_gaussian = { next_pcg32_real<Real>(rng), next_pcg32_real<Real>(rng) };
 	Real rnd_u_axis = next_pcg32_real<Real>(rng);
+	Frame frame(vertex.shading_frame.n);			// Culprit for discontinuity triangles, see notes in the end of the file
 
 	// disk distribution sampling
 	Vector2 p_sample = gaussSample2d(rnd_uv_gaussian, sigmaTr, Rmax);
@@ -179,22 +186,22 @@ std::tuple<BSSRDFSampleAxis, Ray, Real> sampleProbeRay(const PathVertex& vertex,
 	Real pdf = pdf_sample;
 	// 50% sample N axis
 	if (rnd_u_axis <= 0.5) {
-		point = vertex.position + to_world(vertex.shading_frame, Vector3{ p_sample.x, p_sample.y, -len_3rd });
+		point = vertex.position + to_world(frame, Vector3{ p_sample.x, p_sample.y, -len_3rd });
 		axis = NAxis;
-		dir = vertex.shading_frame.n;  // dir along normal
+		dir = frame.n;  // dir along normal
 		pdf *= 0.5;
 	}
 	// 25% sample U axis
 	else if (rnd_u_axis <= 0.75) {
-		point = vertex.position + to_world(vertex.shading_frame, Vector3{ -len_3rd, p_sample.x, p_sample.y });
-		dir = vertex.shading_frame.x;  // dir along U axis
+		point = vertex.position + to_world(frame, Vector3{ -len_3rd, p_sample.x, p_sample.y });
+		dir = frame.x;  // dir along U axis
 		axis = UAxis;
 		pdf *= 0.25;
 	}
 	// 25% sample V axis
 	else {
-		point = vertex.position + to_world(vertex.shading_frame, Vector3{ p_sample.x, -len_3rd, p_sample.y });
-		dir = vertex.shading_frame.y;  // dir along V axis
+		point = vertex.position + to_world(frame, Vector3{ p_sample.x, -len_3rd, p_sample.y });
+		dir = frame.y;  // dir along V axis
 		axis = VAxis;
 		pdf *= 0.25;
 	}
@@ -204,13 +211,14 @@ std::tuple<BSSRDFSampleAxis, Ray, Real> sampleProbeRay(const PathVertex& vertex,
 	return { axis, ray, pdf };
 }
 
-
 Real MISWeight(const PathVertex& vertex, const Vector3& pIn, const Vector3& nIn, BSSRDFSampleAxis mainAxis, Real sigmaTr, Real pdf, Real Rmax) {
 	Vector3 pWo = vertex.position;
 	Real weight = 0;
-	Vector3 N = vertex.shading_frame.n;
-	Vector3 U = vertex.shading_frame.x;
-	Vector3 V = vertex.shading_frame.y;
+
+	Frame frame(vertex.shading_frame.n);
+	Vector3 N = frame.n;
+	Vector3 U = frame.x;
+	Vector3 V = frame.y;
 
 	switch (mainAxis)
 	{
@@ -320,7 +328,7 @@ Spectrum L_single(const Scene& scene, const PathVertex& vertex, const BSSRDF& bs
 			isect = intersect(scene, shadow_ray, RayDifferential());
 			if (isect) continue;
 
-			Real p = henyeyGreenstein_phase(bssrdf.g_, dir_refract, dir_light)[0];
+			Spectrum p = henyeyGreenstein_phase(bssrdf.g_, -dir_refract, dir_light);
 			Real G_term = abs(dot(ni, dir_refract)) / abs(dot(ni, dir_light));
 
 			Real Fti = 1 - fresnel_dielectric(abs(dot(ni, dir_light)), eta);
@@ -367,7 +375,7 @@ Spectrum L_single(const Scene& scene, const PathVertex& vertex, const BSSRDF& bs
 			isect = intersect(scene, shadow_ray, RayDifferential());
 			if (isect) continue;
 
-			Real p = henyeyGreenstein_phase(bssrdf.g_, dir_refract, dir_light)[0];
+			Spectrum p = henyeyGreenstein_phase(bssrdf.g_, -dir_refract, dir_light);
 			Real G_term = abs(dot(ni, dir_refract)) / abs(dot(ni, dir_light));
 
 			Real Fti = 1 - fresnel_dielectric(abs(dot(ni, dir_light)), eta);
@@ -408,8 +416,8 @@ Spectrum L_diffusion(const Scene& scene, const PathVertex& vertex, const BSSRDF&
 
 		Material mtl = scene.materials[probVertex.material_id];
 		// only calc the contrib from the same object
-		//if (!std::holds_alternative<BSSRDF>(mtl) || probVertex.shape_id != vertex.shape_id) continue;
-		if (!std::holds_alternative<BSSRDF>(mtl)) continue;
+		if (!std::holds_alternative<BSSRDF>(mtl) || probVertex.shape_id != vertex.shape_id) continue;
+		//if (!std::holds_alternative<BSSRDF>(mtl)) continue;				// an biased hack
 
 		Vector3 pProbVertex = probVertex.position;
 		Spectrum val_Rd = bssrdf.Rd(length_squared(pProbVertex - vertex.position));
@@ -495,3 +503,20 @@ Spectrum L_bssrdf(const Scene& scene, const PathVertex& vertex, const BSSRDF& bs
 
 	return final;
 }
+
+
+
+
+
+/*
+
+For BSSRDF diffusion sampling, the probe distribution is radially symmetric, so the tangent orientation should be arbitrary and 
+independent of the mesh UV parameterization. 
+
+Using vertex.shading_frame.x/y ties the probe ray placement to per-triangle dpdu/dpdv, 
+which can rotate or flip across triangle boundaries even when the shading normal is smooth. 
+
+Rebuilding a frame from only vertex.shading_frame.n keeps the probe plane aligned with the smooth normal 
+while removing triangle-local tangent discontinuities from the sampling pattern.
+
+*/

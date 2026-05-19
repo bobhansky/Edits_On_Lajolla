@@ -5,7 +5,7 @@
 		<integer name="maxDepth" value="-1"/>
 	</integrator>
 
-	<shape type="serialized">
+	<!--<shape type="serialized">
 		<string name="filename" value="../matpreview/matpreview.serialized"/>
 		<integer name="shapeIndex" value="2"/>
 		<transform name="toWorld">
@@ -20,7 +20,7 @@
 			<float name = "anisotropy" value = "0" />
 			<float name = "eta" value = "1.6" />
 		</bsdf>
-	</shape> 
+	</shape> -->
 
 	<sensor type="perspective" id="Camera-camera">
 		<string name="fovAxis" value="smaller"/>
@@ -31,7 +31,7 @@
 		</transform>
 
 		<sampler type="independent">
-			<integer name="sampleCount" value="16"/>
+			<integer name="sampleCount" value="64"/>
 		</sampler>
 
 		<film type="hdrfilm" id="film">
@@ -77,10 +77,18 @@
 			<matrix value="1 0 0 0 0 1 0 0 0 0 1 0.0252155 0 0 0 1"/>
 		</transform>
 
-		<ref name="bsdf" id="__diffmat"/>
+		<bsdf type="bssrdf">
+			<rgb name="baseColor" value="0.5 0.5 0.5"/>
+			<rgb name="sigma_a" value="0.2 0.2 0.2"/>
+			<rgb name="sigma_s" value="1 1 1"/>
+			<float name = "anisotropy" value = "0" />
+			<float name = "eta" value = "1.6" />
+		</bsdf>
+
+		<!-- <ref name="bsdf" id="__diffmat"/> -->
 	</shape>
 
-	 <shape type="serialized" id="Plane-mesh_0">
+	 <!--<shape type="serialized" id="Plane-mesh_0">
 		<string name="filename" value="../matpreview/matpreview.serialized"/>
 		<integer name="shapeIndex" value="0"/>
 		<transform name="toWorld">
@@ -89,5 +97,5 @@
 		</transform>
 
 		<ref name="bsdf" id="__planemat"/>
-	</shape> 
+	</shape> -->
 </scene>

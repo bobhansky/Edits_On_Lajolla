@@ -1,27 +1,6 @@
-## This is a UCSD CSE272 course project written on top of the lajolla basecode, implementing the Disney Principled BSDF (2012), Volumtric Path Tracing, and BSSRDF
+# lajolla
+UCSD CSE 272 renderer
 
-# Demo Images rendered by lajolla
- ![Demo](https://github.com/bobhansky/Edits_On_Lajolla/blob/main/images/diningSet_front.png)
- ![Demo](https://github.com/bobhansky/Edits_On_Lajolla/blob/main/images/diningSet_side.png)
-
-## Disney BSDF
-![Demo](https://github.com/bobhansky/DisneyBSDF/blob/main/images/disney_bsdf_array_final.png)
-![Demo](https://github.com/bobhansky/DisneyBSDF/blob/main/images/knight_profile.png)
-
-with Normal Mapping:
-
-![Demo](https://github.com/bobhansky/DisneyBSDF_VolumetricPath_Lajolla/blob/main/images/snow_knight_normalMap.png)
-![Demo](https://github.com/bobhansky/DisneyBSDF/blob/main/images/knight.png)
-![Demo](https://github.com/bobhansky/DisneyBSDF/blob/main/images/knight2.png)
-
-## Volumetric Path Tracing
-![Demo](https://github.com/bobhansky/DisneyBSDF_VolumetricPath_Lajolla/blob/main/images/hetvol.png)
-![Demo](https://github.com/bobhansky/DisneyBSDF_VolumetricPath_Lajolla/blob/main/images/hetvol_colored.png)
- <img src="https://github.com/bobhansky/DisneyBSDF_VolumetricPath_Lajolla/blob/main/images/cornellBox_volpath.png" width=800 height=800/>
-
- ## BSSRDF
- ![Demo](https://github.com/bobhansky/DisneyBSDF_VolumetricPath_Lajolla/blob/main/images/bssrdf_knight.png)
- ![Demo](https://github.com/bobhansky/Edits_On_Lajolla/blob/main/images/jadeBuddha.png)
 # Build
 All the dependencies are included. Use CMake to build.
 If you are on Unix systems, try
@@ -61,4 +40,3 @@ We use [miniz](https://github.com/richgel999/miniz) for compression & decompress
 We use [tinyply](https://github.com/ddiakopoulos/tinyply) for parsing PLY files.
 
 Many scenes in the scenes folder are directly downloaded from [http://www.mitsuba-renderer.org/download.html](http://www.mitsuba-renderer.org/download.html). Scenes courtesy of Wenzel Jakob, Cornell Program of Computer Graphics, Marko Dabrovic, Eric Veach, Jonas Pilo, and Bernhard Vogl.
-

@@ -11,9 +11,11 @@
 		<rgb name="sigmaS" value="0.7 0.7 0.7"/>
 		<float name="scale" value="1"/>
 
-<!-- 		<phase type="hg">
-			<float name="g" value="0.5"/>
-		</phase> -->
+ 		<!--
+		<phase type="hg">
+			<float name="g" value="1"/>
+		</phase> 
+		-->
 	</medium>
 
 	<shape type="sphere">

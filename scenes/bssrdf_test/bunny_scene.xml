@@ -2,7 +2,7 @@
 
 <!-- Defaults, these can be set via the command line: -Darg=value -->
 
-	<default name="spp" value="4"/>
+	<default name="spp" value="128"/>
 	<default name="resx" value="1600"/>
 	<default name="resy" value="900"/>
 
@@ -53,16 +53,18 @@
 		</bsdf>
 	</bsdf>
 
-	<bsdf type="twosided" id="mat-buddha" name="mat-buddha_name">
-		<bsdf type="bssrdf">
-			<rgb name="baseColor" value="0.5 0.5 0.5"/>
-			<rgb name="sigma_a" value="0.4 0.1 0.7"/>
-			<rgb name="sigma_s" value="0.2 0.5 0.2"/>     
-			<float name = "anisotropy" value = "0.2" />
-			<float name = "eta" value = "1.62" />
-		</bsdf>
-	</bsdf>
+	<bsdf type="twosided" id="mat-buddha">
+    		<bsdf type="bssrdf">
+			<rgb name="baseColor" value="1.0 0.45 0.62"/>
 
+<rgb name="sigma_a" value="0.08 0.16 0.24"/>
+<rgb name="sigma_s" value="2.5 0.75 0.55"/>
+
+			<float name="anisotropy" value="0.04"/>
+			<float name="eta" value="1.45"/>
+
+   		 </bsdf>
+	</bsdf>
 	
 	<bsdf type="diffuse" id="light">
 		<spectrum name="reflectance" value="400:0.78, 500:0.78, 600:0.78, 700:0.78"/>
@@ -76,9 +78,11 @@
 
 <!-- Shapes -->
 	<shape type="obj" id="elm__4" name="elm__4">
-		<string name="filename" value="meshes/buddha/buddha_40w.obj"/>
-		<boolean name="face_normals" value="false"/>
+		<string name="filename" value="meshes/stanford_bunny.obj"/>
 		<ref id="mat-buddha" name="bsdf"/>
+		<transform name="toWorld">
+    			<translate value="0.5 -0.6 -2"/>
+		</transform>
 	</shape> 
 
 	
