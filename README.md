@@ -22,6 +22,8 @@ with Normal Mapping:
  ## BSSRDF
  ![Demo](https://github.com/bobhansky/DisneyBSDF_VolumetricPath_Lajolla/blob/main/images/bssrdf_knight.png)
  ![Demo](https://github.com/bobhansky/Edits_On_Lajolla/blob/main/images/jadeBuddha.png)
+ ![Demo](https://github.com/bobhansky/Edits_On_Lajolla/blob/main/images/tutu_bssrdf.png)
+
 # Build
 All the dependencies are included. Use CMake to build.
 If you are on Unix systems, try
