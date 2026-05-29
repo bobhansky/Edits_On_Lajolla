@@ -227,7 +227,7 @@ Real MISWeight(const PathVertex& vertex, const Vector3& pIn, const Vector3& nIn,
 		// dot is the jacobian: from projected disk space to surface area space
 		Real uPdf = 0.25 * gaussianSample2dPdf(pWo, pIn, U, sigmaTr, Rmax) * abs(dot(U, nIn));
 		Real vPdf = 0.25 * gaussianSample2dPdf(pWo, pIn, V, sigmaTr, Rmax) * abs(dot(V, nIn));
-		Real nu = 4 * pdf * pdf;
+		Real nu = pdf * pdf;
 		weight = nu / (nu + uPdf * uPdf + vPdf * vPdf);
 
 		break;
@@ -237,7 +237,7 @@ Real MISWeight(const PathVertex& vertex, const Vector3& pIn, const Vector3& nIn,
 		Real nPdf = 0.5 * gaussianSample2dPdf(pWo, pIn, N, sigmaTr, Rmax) * abs(dot(N, nIn));
 		Real uPdf2 = 0.25 * gaussianSample2dPdf(pWo, pIn, U, sigmaTr, Rmax) * abs(dot(U, nIn));
 		Real nu = pdf * pdf;
-		weight = nu / (4 * nPdf * nPdf + uPdf2 * uPdf2 + nu);
+		weight = nu / (nPdf * nPdf + uPdf2 * uPdf2 + nu);
 
 		break;
 	}
@@ -246,7 +246,7 @@ Real MISWeight(const PathVertex& vertex, const Vector3& pIn, const Vector3& nIn,
 		Real nPdf = 0.5 * gaussianSample2dPdf(pWo, pIn, N, sigmaTr, Rmax) * abs(dot(N, nIn));
 		Real vPdf = 0.25 * gaussianSample2dPdf(pWo, pIn, V, sigmaTr, Rmax) * abs(dot(V, nIn));
 		Real nu = pdf * pdf;
-		weight = nu / (4 * nPdf * nPdf + nu + vPdf * vPdf);
+		weight = nu / (nPdf * nPdf + nu + vPdf * vPdf);
 
 		break;
 	}
